@@ -23,7 +23,7 @@ namespace ToastCore.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "pantryyyyy", "olrait den" };
+            return new string[] { "Sample data", "IToast v1" };
         }
 
         /// GET: HowManyBreads
