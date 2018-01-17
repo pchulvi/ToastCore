@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 using ToastCore.Models;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.Reflection;
+using System.IO;
 
 namespace ToastCore
 {
@@ -33,9 +36,17 @@ namespace ToastCore
             services.AddMvc();
 
             // Register the Swagger generator, defining one or more Swagger documents
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var commentsFileName = Assembly.GetExecutingAssembly().GetName().Name + ".xml";
+            var commentsFile = Path.Combine(baseDirectory, commentsFileName);
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "IToast API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info{
+                    Title = "IToast API",
+                    Version = "v1",
+                    Description = "Smart toaster for smart people"
+                    });
+                c.IncludeXmlComments(commentsFile);
             });
         }
 

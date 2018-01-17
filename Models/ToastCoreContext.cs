@@ -24,4 +24,5 @@ namespace ToastCore.Models
             modelBuilder.Entity<SuperMarket>().ToTable("SuperMarkets");
         }
     }
+
 }
