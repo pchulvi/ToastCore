@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,13 +20,6 @@ namespace ToastCore.Controllers
             _context = context;
         }
 
-        // GET api/toaster
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "Sample data", "IToast v1" };
-        }
-
         /// GET: HowManyBreads
         /// <summary>
         /// How many breads are in our pantry
@@ -34,11 +28,9 @@ namespace ToastCore.Controllers
         [HttpGet("/api/pantry/howmanybreads")]
         public int HowManyBreads()
         {
-
             Pantry pantry = _context.Pantries.FirstOrDefault();
 
             return pantry.NumberOfBreads;
-
         }
 
 
@@ -64,14 +56,22 @@ namespace ToastCore.Controllers
         public int GetBreads(int nBreads)
         {
             //if (nBreads < 1) throw new Exception("The number of breads can't be 0 or less 0.");
-            if (nBreads > 2) throw new Exception("You can't get more than 2 breads at same time.");
 
+            if (nBreads > 2)
+            {
+                HttpContext.Response.ContentType = "text/plain";
+                HttpContext.Response.WriteAsync("The number of breads can't be more than 2");
+            }
 
             Pantry pantry = _context.Pantries.FirstOrDefault();
             pantry.NumberOfBreads = pantry.NumberOfBreads - nBreads;
 
 
-            if (pantry.NumberOfBreads < 0) throw new Exception(String.Format("Insufficient breads for toasting. There are {0} breads now in pantry.", pantry.NumberOfBreads));
+            if (pantry.NumberOfBreads < 0)
+            {
+                HttpContext.Response.ContentType = "text/plain";
+                HttpContext.Response.WriteAsync(String.Format("Insufficient breads for toasting. There are {0} breads now in pantry.", pantry.NumberOfBreads));
+            }
 
 
             _context.SaveChanges();
