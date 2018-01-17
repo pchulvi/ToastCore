@@ -18,8 +18,6 @@ namespace ToastCore.Controllers
             _context = context;
         }
 
-
-
         /// <summary>
         /// Example Get method
         /// </summary>
@@ -50,12 +48,21 @@ namespace ToastCore.Controllers
             return _context.Toasters.FirstOrDefault().Status;
         }
 
+        /// <summary>
+        /// Number of toasts made by our current toaster
+        /// </summary>
+        /// <returns>Number of toasts made by our current toaster</returns>
         [HttpGet("/api/toaster/HowManyToastsMade")]
         public int HowManyToastsMade()
         {
             return _context.Toasters.FirstOrDefault().ToastsMade;
         }
 
+        /// <summary>
+        /// Set time for the toaster
+        /// </summary>
+        /// <param name="time">Number of seconds</param>
+        /// <returns>Number of seconds set</returns>
         [HttpPatch("/api/toaster/SetTime/{time}")]
         public int SetTime(int time)
         {
@@ -77,6 +84,11 @@ namespace ToastCore.Controllers
             return time;
         }
 
+        /// <summary>
+        /// Set toasting profile 
+        /// </summary>
+        /// <param name="profile">Profile with different time settings</param>
+        /// <returns>Profile set</returns>
         [HttpPatch("/api/toaster/SetProfile/{profile}")]
         public Profile SetProfile(Profile profile)
         {
@@ -119,6 +131,11 @@ namespace ToastCore.Controllers
             return toaster.Profile;
         }
 
+        /// <summary>
+        /// Set number of toasts 
+        /// </summary>
+        /// <param name="numToasts">Number of toasts. Maximum 2</param>
+        /// <returns>Toasts set</returns>
         [HttpPatch("/api/toaster/SetToasts/{numToasts}")]
         public int SetToasts(int numToasts)
         {
@@ -146,6 +163,11 @@ namespace ToastCore.Controllers
             return toaster.NumToasts;
         }
 
+        /// <summary>
+        /// Turns On/Off the toaster
+        /// </summary>
+        /// <param name="status">Starts or stops the toaster</param>
+        /// <returns>Current status</returns>
         [HttpPut("api/toasters/toast/{status}")]
         public Status Toast(Status status)
         {
@@ -194,9 +216,9 @@ namespace ToastCore.Controllers
         /// <summary>
         /// Toasts with a specific number of toasts and time 
         /// </summary>
-        /// <param name="numToasts"></param>
-        /// <param name="time"></param>
-        /// <returns></returns>
+        /// <param name="numToasts">Number of toasts</param>
+        /// <param name="time">Time in seconds</param>
+        /// <returns>Current status of the toaster</returns>
         [HttpPut("api/toaster/toast/numToasts/{numToasts}/time/{time}")]
         public Status Toast(int numToasts, int time)
         {
