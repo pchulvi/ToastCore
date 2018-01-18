@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ToastCore.Models;
 
 namespace ToastCore.Controllers
@@ -38,47 +39,67 @@ namespace ToastCore.Controllers
         /// Update the number of breads in our pantry
         /// </summary>
         /// <param name="nBreads">Number of breads</param>
+        /// <response code="200">Ok. Returns nbreads</response>
+        /// <response code="500">Error 500</response>
         [HttpPut("/api/pantry/breads/{nBreads}")]
-        public void PutBreads(int nBreads)
+        public IActionResult PutBreads(int nBreads)
         {
             Pantry pantry = _context.Pantries.FirstOrDefault();
             pantry.NumberOfBreads = nBreads;
 
-            _context.SaveChanges();
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error: " + ex.Message);
+            }
+
+            return StatusCode(200, (int)nBreads);
+
         }
 
         /// <summary>
         /// Get a number of breads for the toaster
         /// </summary>
         /// <param name="nBreads">Number of breads. It can't be more than 2 breads in toaster</param>
-
+        /// <response code="200">Ok. Returns nbreads</response>
+        /// <response code="417">Error in GetBreads</response>
+        /// <response code="500">Error 500</response>
         [HttpGet("/api/pantry/breads/{nBreads}")]
-        public int GetBreads(int nBreads)
+        public IActionResult GetBreads(int nBreads)
         {
             //if (nBreads < 1) throw new Exception("The number of breads can't be 0 or less 0.");
 
             if (nBreads > 2)
             {
-                HttpContext.Response.ContentType = "text/plain";
-                HttpContext.Response.WriteAsync("The number of breads can't be more than 2");
-                return 0;
+                return StatusCode(417, "The number of breads can't be more than 2");
             }
 
             Pantry pantry = _context.Pantries.FirstOrDefault();
-            pantry.NumberOfBreads = pantry.NumberOfBreads - nBreads;
+            int rdo = pantry.NumberOfBreads - nBreads;
 
-
-            if (pantry.NumberOfBreads < 0)
+            if (rdo < 0)
             {
-                HttpContext.Response.ContentType = "text/plain";
-                HttpContext.Response.WriteAsync(String.Format("Insufficient breads for toasting. There are {0} breads now in pantry.", pantry.NumberOfBreads));
-                return 0;
+                return StatusCode(417, "Insufficient breads for toasting. There are {0} breads now in pantry.");
             }
 
 
-            _context.SaveChanges();
+            try
+            {
+                pantry.NumberOfBreads = rdo;
+               _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error: " + ex.Message);
+            }
 
-            return nBreads;
+            
+            return StatusCode(200, nBreads);
+            
         }
 
         /// <summary>
@@ -94,17 +115,36 @@ namespace ToastCore.Controllers
         /// <summary>
         /// Actual status of our pantry: 0 = Empty, 1 = AlmostEmpy, 2 = Normal or 3 = Full
         /// </summary>
-        /// <returns>PantryStatus Object</returns>
+        /// <returns>PantryStatus Enumeration</returns>
+        /// <response code="200">Ok. Returns StatusPantry</response>
+        /// <response code="500">Error 500</response>
         [HttpGet("/api/pantry/status")]
-        public PantryStatus GetStatus()
+        public IActionResult GetStatus()
         {
-            int howManyBreads = this.HowManyBreads();
+            Pantry pantry = _context.Pantries.FirstOrDefault();
 
-            if (howManyBreads == 0) return PantryStatus.Empty;
-            if (howManyBreads <= 10) return PantryStatus.AlmostEmpty;
-            if (howManyBreads > 90) return PantryStatus.Full;
+            int howManyBreads = pantry.NumberOfBreads;
 
-            return PantryStatus.Normal;
+            PantryStatus pStatus = pantry.Status;
+
+            if (howManyBreads == 0) pStatus=PantryStatus.Empty;
+            if (howManyBreads <= 10) pStatus= PantryStatus.AlmostEmpty;
+            if (howManyBreads > 90) pStatus= PantryStatus.Full;
+
+            pStatus=PantryStatus.Normal;
+
+            pantry.Status = pStatus;
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return StatusCode(500, "Error: " + ex.Message);
+            }
+
+            return StatusCode(200, pantry.Status.ToString());
         }
 
         /// <summary>
@@ -114,9 +154,10 @@ namespace ToastCore.Controllers
         [HttpPost("/api/pantry/breads/buy/{nBreads}")]
         public void BuyToSupermarket(int nBreads)
         {
-            int breads = new SuperMarketController().SellBread(nBreads);
+            int breads = Int32.Parse(new SuperMarketController().SellBread(nBreads).ToString());
 
             int howmanybreadsNow = this.HowManyBreads();
+
             this.PutBreads(howmanybreadsNow + breads);
         }
     }

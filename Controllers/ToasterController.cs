@@ -160,7 +160,7 @@ namespace ToastCore.Controllers
 
             if (pantry.HowManyBreads() >= 0)
             {
-                toaster.NumToasts = pantry.GetBreads(numToasts);
+                toaster.NumToasts = Int32.Parse(pantry.GetBreads(numToasts).ToString());
             }
 
             _context.Entry(toaster).State = EntityState.Modified;
