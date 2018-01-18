@@ -61,6 +61,7 @@ namespace ToastCore.Controllers
             {
                 HttpContext.Response.ContentType = "text/plain";
                 HttpContext.Response.WriteAsync("The number of breads can't be more than 2");
+                return 0;
             }
 
             Pantry pantry = _context.Pantries.FirstOrDefault();
@@ -71,6 +72,7 @@ namespace ToastCore.Controllers
             {
                 HttpContext.Response.ContentType = "text/plain";
                 HttpContext.Response.WriteAsync(String.Format("Insufficient breads for toasting. There are {0} breads now in pantry.", pantry.NumberOfBreads));
+                return 0;
             }
 
 

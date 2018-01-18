@@ -28,6 +28,7 @@ namespace ToastCore.Controllers
             {
                 HttpContext.Response.ContentType = "text/plain";
                 HttpContext.Response.WriteAsync("I can't sell more than 60 breads");
+                return 0;
             }
             
             return nBreads;

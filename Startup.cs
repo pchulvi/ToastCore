@@ -9,6 +9,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Reflection;
 using System.IO;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace ToastCore
 {
@@ -53,6 +54,9 @@ namespace ToastCore
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseDeveloperExceptionPage();
+            app.UseDatabaseErrorPage();
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
@@ -72,6 +76,16 @@ namespace ToastCore
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //Para nginx
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
+
+            app.UseAuthentication();
+
+          
         }
     }
 }
