@@ -4,6 +4,11 @@ using ToastCore.Models;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http;
+using System.Text;
+using System.Net.Http.Headers;
+using System.Net;
 
 namespace ToastCore.Controllers
 {
@@ -42,20 +47,22 @@ namespace ToastCore.Controllers
         /// Current status of the toaster
         /// </summary>
         /// <returns>Current status of the toaster</returns>
+        /// <response code="200">Current status of the IToast</response>
         [HttpGet("/api/toaster/GetCurrentStatus")]
-        public Status GetCurrentStatus()
+        public IActionResult GetCurrentStatus()
         {
-            return _context.Toasters.FirstOrDefault().Status;
+            return StatusCode(200, _context.Toasters.FirstOrDefault().Status);
         }
 
         /// <summary>
         /// Number of toasts made by our current toaster
         /// </summary>
         /// <returns>Number of toasts made by our current toaster</returns>
+        /// <response code="200">Number of toasts made by the IToast</response>
         [HttpGet("/api/toaster/HowManyToastsMade")]
-        public int HowManyToastsMade()
+        public IActionResult HowManyToastsMade()
         {
-            return _context.Toasters.FirstOrDefault().ToastsMade;
+            return StatusCode(200, _context.Toasters.FirstOrDefault().ToastsMade);
         }
 
         /// <summary>
@@ -63,8 +70,9 @@ namespace ToastCore.Controllers
         /// </summary>
         /// <param name="time">Number of seconds</param>
         /// <returns>Number of seconds set</returns>
+        /// <response code="200">Number of seconds set</response>
         [HttpPatch("/api/toaster/SetTime/{time}")]
-        public int SetTime(int time)
+        public IActionResult SetTime(int time)
         {
             Toaster toaster = _context.Toasters.FirstOrDefault();
             toaster.Time = time;
@@ -76,12 +84,12 @@ namespace ToastCore.Controllers
             {
                 _context.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                throw;
+                return StatusCode(500, "Error: " + ex.Message);
             }
 
-            return time;
+            return StatusCode(200, toaster.Time.ToString()); 
         }
 
         /// <summary>
@@ -89,8 +97,10 @@ namespace ToastCore.Controllers
         /// </summary>
         /// <param name="profile">Profile with different time settings</param>
         /// <returns>Profile set</returns>
+        /// <response code="200">Profile set</response>
+        /// <response code="417">Profile error</response>
         [HttpPatch("/api/toaster/SetProfile/{profile}")]
-        public Profile SetProfile(Profile profile)
+        public IActionResult SetProfile(Profile profile)
         {
             Toaster toaster = _context.Toasters.FirstOrDefault();
             toaster.Profile = profile;
@@ -112,9 +122,8 @@ namespace ToastCore.Controllers
                 case Profile.Burnt:
                     toaster.Time = 600;
                     break;
-
                 default:
-                    throw new Exception("Profile error.");
+                    return StatusCode(417, "Profile error.");
             }
 
             _context.Entry(toaster).State = EntityState.Modified;
@@ -123,12 +132,12 @@ namespace ToastCore.Controllers
             {
                 _context.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                throw;
+                return StatusCode(500, "Error: " + ex.Message);
             }
 
-            return toaster.Profile;
+            return StatusCode(200, toaster.Profile.ToString());
         }
 
         /// <summary>
@@ -136,10 +145,15 @@ namespace ToastCore.Controllers
         /// </summary>
         /// <param name="numToasts">Number of toasts. Maximum 2</param>
         /// <returns>Toasts set</returns>
+        /// <response code="200">Number of toasts in the toaster</response>
+        /// <response code="417">Error in the number of toasts</response>
         [HttpPatch("/api/toaster/SetToasts/{numToasts}")]
-        public int SetToasts(int numToasts)
+        public IActionResult SetToasts(int numToasts)
         {
-            if (numToasts > 2) throw new Exception("The maximum number of toasts is 2.");
+            if (numToasts > 2)
+            {
+                return StatusCode(417, "The maximum number of toasts is 2.");
+            }
 
             Toaster toaster = _context.Toasters.FirstOrDefault();
             PantryController pantry = new PantryController(_context);
@@ -155,12 +169,12 @@ namespace ToastCore.Controllers
             {
                 _context.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                throw;
+                return StatusCode(500, "Error: " + ex.Message);
             }
 
-            return toaster.NumToasts;
+            return StatusCode(200, toaster.NumToasts.ToString());
         }
 
         /// <summary>
@@ -168,12 +182,14 @@ namespace ToastCore.Controllers
         /// </summary>
         /// <param name="status">Starts or stops the toaster</param>
         /// <returns>Current status</returns>
+        /// <response code="200">Message with the current status of the IToast</response>
+        /// <response code="417">Error: No bread in the Toaster</response>
         [HttpPut("api/toasters/toast/{status}")]
-        public Status Toast(Status status)
+        public IActionResult Toast(Status status)
         {
             Toaster toaster = _context.Toasters.FirstOrDefault();
 
-            if (toaster.Status == status) return status;
+            if (toaster.Status == status) return StatusCode(200, String.Format("IToast status is: {0}", toaster.Status));
 
             toaster.Status = status;
 
@@ -189,7 +205,9 @@ namespace ToastCore.Controllers
                         toaster.TimeEnd = DateTime.Now.AddSeconds(toaster.Time).ToString();
                     }
                     else
-                        throw new Exception("No bread in the Toaster.");
+                    {
+                        return StatusCode(417, "Error: No bread in the Toaster.");
+                    }                        
                     break;
 
                 default:
@@ -206,11 +224,11 @@ namespace ToastCore.Controllers
             {
                 _context.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                throw;
+                return StatusCode(500, "Error: " + ex.Message);
             }
-            return toaster.Status;
+            return StatusCode(200, String.Format("IToast status is: {0}", toaster.Status));
         }
 
         /// <summary>
@@ -219,20 +237,20 @@ namespace ToastCore.Controllers
         /// <param name="numToasts">Number of toasts</param>
         /// <param name="time">Time in seconds</param>
         /// <returns>Current status of the toaster</returns>
+        /// <response code="200">Message with the current status of the IToast</response>
+        /// <response code="417">Error: No bread in the Toaster</response>
         [HttpPut("api/toaster/toast/numToasts/{numToasts}/time/{time}")]
-        public Status Toast(int numToasts, int time)
+        public IActionResult Toast(int numToasts, int time)
         {
             try
             {
                 SetToasts(numToasts);
                 SetTime(time);
-
                 return Toast(Status.On);
-
             }
             catch (Exception ex)
             {
-                throw ex;
+                return StatusCode(500, "Eror: " + ex.Message);
             }
 
         }
