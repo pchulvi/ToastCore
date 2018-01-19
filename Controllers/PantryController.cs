@@ -99,9 +99,10 @@ namespace ToastCore.Controllers
             
         }
 
-             
-        
-        private int pGetBreads(int breadsArg)
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet]
+        public int pGetBreads(int breadsArg)
         {
             Pantry pantry = _context.Pantries.FirstOrDefault();
 
