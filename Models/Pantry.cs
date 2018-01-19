@@ -13,5 +13,7 @@ namespace ToastCore.Models
 
         public PantryStatus Status { get; set; }
 
+
+       
     }
 }

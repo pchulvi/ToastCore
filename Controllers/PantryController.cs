@@ -77,29 +77,47 @@ namespace ToastCore.Controllers
             {
                 return StatusCode(417, "The number of breads can't be more than 2");
             }
+          
 
-            Pantry pantry = _context.Pantries.FirstOrDefault();
-            int rdo = pantry.NumberOfBreads - nBreads;
+            //if (rdo < 0)
+            //{
+            //    return StatusCode(417, "Insufficient breads for toasting. There are {0} breads now in pantry.");
+            //}
 
-            if (rdo < 0)
+            int breads = 0;
+
+            try
             {
-                return StatusCode(417, "Insufficient breads for toasting. There are {0} breads now in pantry.");
+                breads = pGetBreads(nBreads);
             }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error: " + ex.Message);
+            }
+            
+            return StatusCode(200, nBreads);
+            
+        }
 
+             
+        
+        private int pGetBreads(int breadsArg)
+        {
+            Pantry pantry = _context.Pantries.FirstOrDefault();
+
+            int rdo = pantry.NumberOfBreads - breadsArg;
 
             try
             {
                 pantry.NumberOfBreads = rdo;
-               _context.SaveChanges();
+                _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException ex)
             {
-                return StatusCode(500, "Error: " + ex.Message);
+                throw ex;
             }
 
-            
-            return StatusCode(200, nBreads);
-            
+            return breadsArg;
         }
 
         /// <summary>
@@ -151,14 +169,34 @@ namespace ToastCore.Controllers
         /// Buy breads in Supermarket
         /// </summary>
         /// <param name="nBreads"></param>
+        /// <returns>Returns total breads bought</returns>
         [HttpPost("/api/pantry/breads/buy/{nBreads}")]
-        public void BuyToSupermarket(int nBreads)
+        public IActionResult BuyToSupermarket(int nBreads)
         {
-            int breads = Int32.Parse(new SuperMarketController().SellBread(nBreads).ToString());
+            // int breads = Int32.Parse(new SuperMarketController().SellBread(nBreads).ToString());
+
+            int breads = 0;
+            try
+            {
+                breads = new SuperMarketController().getBreads(nBreads);
+            }
+            catch
+            {
+                return StatusCode(500, "I can't sell more than 60 breads");
+            }
 
             int howmanybreadsNow = this.HowManyBreads();
 
-            this.PutBreads(howmanybreadsNow + breads);
+            int total = howmanybreadsNow + breads;
+
+            if (total > 100)
+            {
+                return StatusCode(500, "The total capacity of pantry is 100 breads");
+            }
+
+            this.PutBreads(total);
+
+            return StatusCode(200, total);
         }
     }
 }

@@ -25,12 +25,25 @@ namespace ToastCore.Controllers
         {
             //if (nBreads < 1) throw new Exception("I can't sell less 1 bread");
 
-            if (nBreads > 60)
+            int getBreads = 0;
+            try
+            {
+                getBreads = this.getBreads(nBreads);
+            }
+            catch
             {
                 return StatusCode(500, "I can't sell more than 60 breads");
             }
+           
+            
+            return StatusCode(200, getBreads);
+        }
 
-            return StatusCode(200, nBreads);
+        public int getBreads(int nBreads)
+        {
+            if (nBreads > 60) throw new Exception();
+
+            return nBreads;
         }
     }
 }
