@@ -238,14 +238,19 @@ namespace ToastCore.Controllers
         /// <param name="time">Time in seconds</param>
         /// <returns>Current status of the toaster</returns>
         /// <response code="200">Message with the current status of the IToast</response>
-        /// <response code="417">Error: No bread in the Toaster</response>
         [HttpPut("api/toaster/toast/numToasts/{numToasts}/time/{time}")]
         public IActionResult Toast(int numToasts, int time)
         {
             try
             {
-                SetToasts(numToasts);
-                SetTime(time);
+                ObjectResult res = new ObjectResult(null);
+
+                res = (ObjectResult)SetToasts(numToasts);
+                if (res.StatusCode.Value != 200) throw new Exception(res.Value.ToString());
+                
+                res = (ObjectResult)SetTime(time);
+                if (res.StatusCode.Value != 200) throw new Exception(res.Value.ToString());
+
                 return Toast(Status.On);
             }
             catch (Exception ex)
