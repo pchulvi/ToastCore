@@ -9,7 +9,8 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netcoreapp2.0\ToastCore.xml</DocumentationFile>
+    <DocumentationFile>bin\ToastCore.xml</DocumentationFile>
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,5 +38,12 @@
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.Development.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+ 
 
 </Project>

@@ -10,6 +10,8 @@ using System;
 using System.Reflection;
 using System.IO;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 //using Microsoft.AspNetCore.Mvc;
 //using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
@@ -33,22 +35,22 @@ namespace ToastCore
         public void ConfigureServices(IServiceCollection services)
         {
             //// Add Cors
-            //services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
-            //{
-            //    builder.AllowAnyOrigin()
-            //           .AllowAnyMethod()
-            //           .AllowAnyHeader();
-            //}));
+            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
 
             services.AddDbContext<ToastCoreContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // Add framework services.
             services.AddMvc();
-            //services.Configure<MvcOptions>(options =>
-            //{
-            //    options.Filters.Add(new CorsAuthorizationFilterFactory("MyPolicy"));
-            //});
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("MyPolicy"));
+            });
 
             // Register the Swagger generator, defining one or more Swagger documents
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -68,11 +70,14 @@ namespace ToastCore
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseDeveloperExceptionPage();
-            app.UseDatabaseErrorPage();
+           
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            app.UseDeveloperExceptionPage();
+            app.UseDatabaseErrorPage();
+           
 
             //// Enable Cors
             //app.UseCors("MyPolicy");

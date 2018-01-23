@@ -22,6 +22,10 @@
             <input type="button" id="btnStart" value="Toast!" />
             <input type="button" id="btnStop" value="Stop" />
         </div>
+		<div>
+			<label id="lblPantry">Pantry</label>
+			<input type="button" id="btnHowMany" value="How Many Breads" onclick="howManyBreads();" />
+		</div>
         <div>
             
         </div>
@@ -46,4 +50,20 @@
         });
     }
 
+	function howManyBreads(){
+
+	  $.ajax({
+            type: "GET",
+            url: 'http://localhost:8099/api/pantry/howmanybreads/',
+            contentType: "application/json;charset=utf-8",
+            success: function (data, status, xhr) {
+                //alert('ok');
+				alert('Number of breads: ' + data);
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+
+	}
 </script>
