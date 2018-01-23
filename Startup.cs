@@ -10,6 +10,8 @@ using System;
 using System.Reflection;
 using System.IO;
 using Microsoft.AspNetCore.HttpOverrides;
+//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
 namespace ToastCore
 {
@@ -30,11 +32,23 @@ namespace ToastCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //// Add Cors
+            //services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            //{
+            //    builder.AllowAnyOrigin()
+            //           .AllowAnyMethod()
+            //           .AllowAnyHeader();
+            //}));
+
             services.AddDbContext<ToastCoreContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             // Add framework services.
             services.AddMvc();
+            //services.Configure<MvcOptions>(options =>
+            //{
+            //    options.Filters.Add(new CorsAuthorizationFilterFactory("MyPolicy"));
+            //});
 
             // Register the Swagger generator, defining one or more Swagger documents
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
@@ -59,6 +73,9 @@ namespace ToastCore
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            //// Enable Cors
+            //app.UseCors("MyPolicy");
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
