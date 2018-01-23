@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Net.Http.Headers;
 using System.Net;
+//using Microsoft.AspNetCore.Cors;
 
 namespace ToastCore.Controllers
 {
@@ -49,6 +50,7 @@ namespace ToastCore.Controllers
         /// <returns>Current status of the toaster</returns>
         /// <response code="200">Current status of the IToast</response>
         [HttpGet("/api/toaster/GetCurrentStatus")]
+        //[EnableCors("MyPolicy")]
         public IActionResult GetCurrentStatus()
         {
             return StatusCode(200, _context.Toasters.FirstOrDefault().Status);
