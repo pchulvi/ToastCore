@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <div class="row-md-12" style="grid-row:span">
+        <div>
+            <h2>IToast Control Panel </h2>
+            <label id="lblMinutes">Time </label>
+            <input id="minutesInput" type="number" min="0" max="59" placeholder="00" style="width: 45px" />
+            <span>:</span>
+            <input id="secondsInput" type="number" min="0" max="59" placeholder="00" maxlength="2" style="width: 45px" />
+            <input type="button" id="btnSetTime" value="Set Time" />
+        </div>
+        <div>
+            <label id="lblToasts">Number of toasts</label>
+            <input type="number" id="toastsInput" min="0" placeholder="00" style="width: 45px" />
+            <input type="button" id="btnSetToasts" value="Set Toasts" />
+        </div>
+        <div>
+            <input type="button" id="btnStatus" value="Current Status" onclick="currentStatus();" />
+            <input type="button" id="btnStart" value="Toast!" />
+            <input type="button" id="btnStop" value="Stop" />
+        </div>
+        <div>
+            
+        </div>
+    </div>
+</div>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+<script>
+    var uri = 'http://localhost:23732/api/toaster/';
+
+    function currentStatus() {
+
+        $.ajax({
+            type: "GET",
+            url: uri + "GetCurrentStatus",
+            contentType: "application/json;charset=utf-8",
+            success: function (data, status, xhr) {
+                alert('ok');
+            },
+            error: function (xhr) {
+                alert(xhr.responseText);
+            }
+        });
+    }
+
+</script>

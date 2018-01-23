@@ -297,7 +297,6 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
-/ToastCore.sln
 appsettings.json
 /web.config
 
