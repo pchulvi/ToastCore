@@ -159,8 +159,6 @@ namespace ToastCore.Controllers
                 return StatusCode(417, "The maximum number of toasts is 2.");
             }
 
-            //PantryController pantry = new PantryController(_context);
-
             if (_pantry.HowManyBreads() >= 0)
             {
                 _toaster.NumToasts = _pantry.pGetBreads(numToasts);
