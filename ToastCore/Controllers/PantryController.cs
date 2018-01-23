@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToastCore.Models;
@@ -16,29 +11,18 @@ namespace ToastCore.Controllers
     public class PantryController : Controller
     {
         private readonly ToastCoreContext _context;
+        private readonly SuperMarketController _superMarket;
+        private Pantry _pantry;
 
         public PantryController(ToastCoreContext context)
         {
             _context = context;
+            _superMarket = new SuperMarketController();
+            _pantry = context.Pantries.FirstOrDefault();
         }
 
-        /// GET: HowManyBreads
         /// <summary>
-        /// How many breads are in our pantry
-        /// </summary>
-        /// <returns>A number of breads (as int)</returns>
-        [HttpGet("/api/pantry/howmanybreads")]
-        [EnableCors("MyPolicy")]
-        public int HowManyBreads()
-        {
-            Pantry pantry = _context.Pantries.FirstOrDefault();
-
-            return pantry.NumberOfBreads;
-        }
-
-
-        /// <summary>
-        /// Update the number of breads in our pantry
+        /// Sets the number of breads in our pantry
         /// </summary>
         /// <param name="nBreads">Number of breads</param>
         /// <response code="200">Ok. Returns nbreads</response>
@@ -46,9 +30,7 @@ namespace ToastCore.Controllers
         [HttpPut("/api/pantry/breads/{nBreads}")]
         public IActionResult PutBreads(int nBreads)
         {
-            Pantry pantry = _context.Pantries.FirstOrDefault();
-            pantry.NumberOfBreads = nBreads;
-
+            _pantry.NumberOfBreads = nBreads;
 
             try
             {
@@ -73,21 +55,12 @@ namespace ToastCore.Controllers
         [HttpGet("/api/pantry/breads/{nBreads}")]
         public IActionResult GetBreads(int nBreads)
         {
-            //if (nBreads < 1) throw new Exception("The number of breads can't be 0 or less 0.");
-
             if (nBreads > 2)
             {
                 return StatusCode(417, "The number of breads can't be more than 2");
             }
           
-
-            //if (rdo < 0)
-            //{
-            //    return StatusCode(417, "Insufficient breads for toasting. There are {0} breads now in pantry.");
-            //}
-
             int breads = 0;
-
             try
             {
                 breads = pGetBreads(nBreads);
@@ -101,18 +74,20 @@ namespace ToastCore.Controllers
             
         }
 
-
+        /// <summary>
+        /// Discounts breads from Pantry
+        /// </summary>
+        /// <param name="breadsArg"></param>
+        /// <returns></returns>
         [ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet]
         public int pGetBreads(int breadsArg)
         {
-            Pantry pantry = _context.Pantries.FirstOrDefault();
-
-            int rdo = pantry.NumberOfBreads - breadsArg;
+            int rdo = _pantry.NumberOfBreads - breadsArg;
 
             try
             {
-                pantry.NumberOfBreads = rdo;
+                _pantry.NumberOfBreads = rdo;
                 _context.SaveChanges();
             }
             catch (DbUpdateConcurrencyException ex)
@@ -127,10 +102,11 @@ namespace ToastCore.Controllers
         /// Is there bread in pantry?
         /// </summary>
         /// <returns>Boolean</returns>
+        /// <response code="200">Has bread the IToast?</response>
         [HttpGet("/api/pantry/hasbread")]
-        public bool HasBread()
+        public IActionResult HasBread()
         {
-            return this.HowManyBreads() > 0;
+            return StatusCode(200, (this.HowManyBreads() > 0).ToString());
         }
 
         /// <summary>
@@ -142,11 +118,11 @@ namespace ToastCore.Controllers
         [HttpGet("/api/pantry/status")]
         public IActionResult GetStatus()
         {
-            Pantry pantry = _context.Pantries.FirstOrDefault();
+            //Pantry pantry = _context.Pantries.FirstOrDefault();
 
-            int howManyBreads = pantry.NumberOfBreads;
+            int howManyBreads = _pantry.NumberOfBreads;
 
-            PantryStatus pStatus = pantry.Status;
+            PantryStatus pStatus = _pantry.Status;
 
             if (howManyBreads == 0) pStatus=PantryStatus.Empty;
             if (howManyBreads <= 10) pStatus= PantryStatus.AlmostEmpty;
@@ -154,7 +130,7 @@ namespace ToastCore.Controllers
 
             pStatus=PantryStatus.Normal;
 
-            pantry.Status = pStatus;
+            _pantry.Status = pStatus;
 
             try
             {
@@ -165,7 +141,7 @@ namespace ToastCore.Controllers
                 return StatusCode(500, "Error: " + ex.Message);
             }
 
-            return StatusCode(200, pantry.Status.ToString());
+            return StatusCode(200, _pantry.Status.ToString());
         }
 
         /// <summary>
@@ -176,12 +152,10 @@ namespace ToastCore.Controllers
         [HttpPost("/api/pantry/breads/buy/{nBreads}")]
         public IActionResult BuyToSupermarket(int nBreads)
         {
-            // int breads = Int32.Parse(new SuperMarketController().SellBread(nBreads).ToString());
-
             int breads = 0;
             try
             {
-                breads = new SuperMarketController().getBreads(nBreads);
+                breads = _superMarket.getBreads(nBreads);
             }
             catch
             {
@@ -197,9 +171,24 @@ namespace ToastCore.Controllers
                 return StatusCode(500, "The total capacity of pantry is 100 breads");
             }
 
-            this.PutBreads(total);
+            ObjectResult res = new ObjectResult(null);
+
+            res = (ObjectResult)this.PutBreads(total);
+            if (res.StatusCode.Value != 200) return StatusCode(500, "Eror: " + res.Value.ToString());
 
             return StatusCode(200, total);
+        }
+
+        /// GET: HowManyBreads
+        /// <summary>
+        /// How many breads are in our pantry
+        /// </summary>
+        /// <returns>A number of breads (as int)</returns>
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet]
+        public int HowManyBreads()
+        {
+            return _pantry.NumberOfBreads;
         }
     }
 }

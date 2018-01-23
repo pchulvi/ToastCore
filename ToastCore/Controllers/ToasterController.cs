@@ -18,38 +18,28 @@ namespace ToastCore.Controllers
     public class ToasterController : Controller
     {
         private readonly ToastCoreContext _context;
+        private readonly PantryController _pantry;
+        private Toaster _toaster;
 
+        /// <summary>
+        /// Controller of our IToast
+        /// </summary>
+        /// <param name="context">Context of the database</param>
         public ToasterController(ToastCoreContext context)
         {
             _context = context;
-
-            Toaster _toaster = new Toaster()
-            {
-                NumToasts = 0,
-                Profile = 0,
-                Time = 0,
-                TimeStart = new DateTime().ToString(),
-                TimeEnd = new DateTime().ToString(),
-                Status = Status.Off
-            };
+            _pantry = new PantryController(_context);
+            _toaster = context.Toasters.FirstOrDefault();
         }
 
-        /// <summary>
-        /// Example Get method
-        /// </summary>
-        /// <returns>Example data</returns>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "toasterrr", "olrait" };
-        }
-        
+        #region GET Methods
+
         /// <summary>
         /// Gets Toaster info
         /// </summary>
         /// <returns>Toaster data</returns>
         [HttpGet("/api/toaster/GetToasters")]
-        public IQueryable<Toaster> GetToasters()
+        public IQueryable<Toaster> GetToaster()
         {
             return _context.Toasters;
         }
@@ -63,7 +53,7 @@ namespace ToastCore.Controllers
         //[EnableCors("MyPolicy")]
         public IActionResult GetCurrentStatus()
         {
-            return StatusCode(200, _context.Toasters.FirstOrDefault().Status);
+            return StatusCode(200, _toaster.Status);
         }
 
         /// <summary>
@@ -74,8 +64,12 @@ namespace ToastCore.Controllers
         [HttpGet("/api/toaster/HowManyToastsMade")]
         public IActionResult HowManyToastsMade()
         {
-            return StatusCode(200, _context.Toasters.FirstOrDefault().ToastsMade);
+            return StatusCode(200, _toaster.ToastsMade);
         }
+
+        #endregion
+
+        #region PATCH Methods
 
         /// <summary>
         /// Set time for the toaster
@@ -86,11 +80,10 @@ namespace ToastCore.Controllers
         [HttpPatch("/api/toaster/SetTime/{time}")]
         public IActionResult SetTime(int time)
         {
-            Toaster toaster = _context.Toasters.FirstOrDefault();
-            toaster.Time = time;
-            toaster.Profile = Profile.NoProfile;
+            _toaster.Time = time;
+            _toaster.Profile = Profile.NoProfile;
 
-            _context.Entry(toaster).State = EntityState.Modified;
+            _context.Entry(_toaster).State = EntityState.Modified;
 
             try
             {
@@ -101,7 +94,7 @@ namespace ToastCore.Controllers
                 return StatusCode(500, "Error: " + ex.Message);
             }
 
-            return StatusCode(200, toaster.Time.ToString()); 
+            return StatusCode(200, _toaster.Time.ToString()); 
         }
 
         /// <summary>
@@ -114,31 +107,30 @@ namespace ToastCore.Controllers
         [HttpPatch("/api/toaster/SetProfile/{profile}")]
         public IActionResult SetProfile(Profile profile)
         {
-            Toaster toaster = _context.Toasters.FirstOrDefault();
-            toaster.Profile = profile;
+            _toaster.Profile = profile;
 
             switch (profile)
             {
                 case Profile.NoProfile:
-                    toaster.Time = 0;
+                    _toaster.Time = 0;
                     break;
                 case Profile.Low:
-                    toaster.Time = 90;
+                    _toaster.Time = 90;
                     break;
                 case Profile.Normal:
-                    toaster.Time = 180;
+                    _toaster.Time = 180;
                     break;
                 case Profile.High:
-                    toaster.Time = 360;
+                    _toaster.Time = 360;
                     break;
                 case Profile.Burnt:
-                    toaster.Time = 600;
+                    _toaster.Time = 600;
                     break;
                 default:
                     return StatusCode(417, "Profile error.");
             }
 
-            _context.Entry(toaster).State = EntityState.Modified;
+            _context.Entry(_toaster).State = EntityState.Modified;
 
             try
             {
@@ -149,7 +141,7 @@ namespace ToastCore.Controllers
                 return StatusCode(500, "Error: " + ex.Message);
             }
 
-            return StatusCode(200, toaster.Profile.ToString());
+            return StatusCode(200, _toaster.Profile.ToString());
         }
 
         /// <summary>
@@ -167,15 +159,12 @@ namespace ToastCore.Controllers
                 return StatusCode(417, "The maximum number of toasts is 2.");
             }
 
-            Toaster toaster = _context.Toasters.FirstOrDefault();
-            PantryController pantry = new PantryController(_context);
-
-            if (pantry.HowManyBreads() >= 0)
+            if (_pantry.HowManyBreads() >= 0)
             {
-                toaster.NumToasts = pantry.pGetBreads(numToasts);
+                _toaster.NumToasts = _pantry.pGetBreads(numToasts);
             }
 
-            _context.Entry(toaster).State = EntityState.Modified;
+            _context.Entry(_toaster).State = EntityState.Modified;
 
             try
             {
@@ -186,7 +175,30 @@ namespace ToastCore.Controllers
                 return StatusCode(500, "Error: " + ex.Message);
             }
 
-            return StatusCode(200, toaster.NumToasts.ToString());
+            return StatusCode(200, _toaster.NumToasts.ToString());
+        }
+
+        #endregion
+
+        #region PUT Methods
+
+        /// <summary>
+        /// Resets the IToast to its starting values
+        /// </summary>
+        /// <returns>Status of the IToast</returns>
+        /// <response code="200">Message with the current status of the IToast</response>
+        /// <response code="417">Error: IToast is already Off</response>
+        [HttpPut("api/toasters/reset")]
+        public IActionResult ResetToaster()
+        {
+            if (_toaster.Status == Status.Off) return StatusCode(417, String.Format("IToast status is: {0}", _toaster.Status));
+
+            ObjectResult res = new ObjectResult(null);
+
+            res = (ObjectResult)Toast(Status.Off);
+            if (res.StatusCode.Value != 200) throw new Exception(res.Value.ToString());
+
+            return StatusCode(200, String.Format("IToast status is: {0}", _toaster.Status));
         }
 
         /// <summary>
@@ -199,22 +211,20 @@ namespace ToastCore.Controllers
         [HttpPut("api/toasters/toast/{status}")]
         public IActionResult Toast(Status status)
         {
-            Toaster toaster = _context.Toasters.FirstOrDefault();
+            if (_toaster.Status == status) return StatusCode(200, String.Format("IToast status is: {0}", _toaster.Status));
 
-            if (toaster.Status == status) return StatusCode(200, String.Format("IToast status is: {0}", toaster.Status));
+            _toaster.Status = status;
 
-            toaster.Status = status;
+            _context.Entry(_toaster).State = EntityState.Modified;
 
-            _context.Entry(toaster).State = EntityState.Modified;
-
-            switch (toaster.Status)
+            switch (_toaster.Status)
             {
                 case Status.On:
-                    if (toaster.NumToasts > 0)
+                    if (_toaster.NumToasts > 0)
                     {
-                        toaster.ToastsMade += toaster.NumToasts;
-                        toaster.TimeStart = DateTime.Now.ToString();
-                        toaster.TimeEnd = DateTime.Now.AddSeconds(toaster.Time).ToString();
+                        _toaster.ToastsMade += _toaster.NumToasts;
+                        _toaster.TimeStart = DateTime.Now.ToString();
+                        _toaster.TimeEnd = DateTime.Now.AddSeconds(_toaster.Time).ToString();
                     }
                     else
                     {
@@ -223,14 +233,15 @@ namespace ToastCore.Controllers
                     break;
 
                 default:
-                    toaster.NumToasts = 0;
-                    toaster.Profile = Profile.NoProfile;
-                    toaster.TimeStart = new DateTime().ToString();
-                    toaster.TimeEnd = new DateTime().ToString();
+                    _toaster.NumToasts = 0;
+                    _toaster.Profile = Profile.NoProfile;
+                    _toaster.Time = 0;
+                    _toaster.TimeStart = new DateTime().ToString();
+                    _toaster.TimeEnd = new DateTime().ToString();
                     break;
             }
 
-            _context.Entry(toaster).State = EntityState.Modified;
+            _context.Entry(_toaster).State = EntityState.Modified;
 
             try
             {
@@ -240,7 +251,7 @@ namespace ToastCore.Controllers
             {
                 return StatusCode(500, "Error: " + ex.Message);
             }
-            return StatusCode(200, String.Format("IToast status is: {0}", toaster.Status));
+            return StatusCode(200, String.Format("IToast status is: {0}", _toaster.Status));
         }
 
         /// <summary>
@@ -272,5 +283,6 @@ namespace ToastCore.Controllers
 
         }
 
+        #endregion
     }
 }
