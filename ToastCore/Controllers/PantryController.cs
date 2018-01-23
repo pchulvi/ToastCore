@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,7 @@ namespace ToastCore.Controllers
         /// </summary>
         /// <returns>A number of breads (as int)</returns>
         [HttpGet("/api/pantry/howmanybreads")]
+        [EnableCors("MyPolicy")]
         public int HowManyBreads()
         {
             Pantry pantry = _context.Pantries.FirstOrDefault();
