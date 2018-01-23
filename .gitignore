@@ -300,3 +300,4 @@ __pycache__/
 appsettings.json
 /web.config
 
+ToastCore/appsettings.Development.json
