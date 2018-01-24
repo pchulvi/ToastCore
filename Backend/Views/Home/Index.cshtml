@@ -10,17 +10,24 @@
             <input id="minutesInput" type="number" min="0" max="59" placeholder="00" style="width: 45px" />
             <span>:</span>
             <input id="secondsInput" type="number" min="0" max="59" placeholder="00" maxlength="2" style="width: 45px" />
-            <input type="button" id="btnSetTime" value="Set Time" />
+            <input type="button" id="btnSetTime" value="Set Time" onclick="setTime()" />
         </div>
         <div>
             <label id="lblToasts">Number of toasts</label>
             <input type="number" id="toastsInput" min="0" placeholder="00" style="width: 45px" />
-            <input type="button" id="btnSetToasts" value="Set Toasts" />
+            <input type="button" id="btnSetToasts" value="Set Toasts" onclick="setToasts()"  />
         </div>
+		<div>
+			<label id="lblToasts">Profile</label>
+			<input type="radio" name="gender" value="male">Burnt</input>
+			<input type="radio" name="gender" value="female">High</input>
+			<input type="radio" name="gender" value="other">Normal</input>
+			<input type="radio" name="gender" value="other">Low</input>
+		</div>
         <div>
             <input type="button" id="btnStatus" value="Current Status" onclick="currentStatus();" />
-            <input type="button" id="btnStart" value="Toast!" />
-            <input type="button" id="btnStop" value="Stop" />
+            <input type="button" id="btnStart" value="Toast!" onclick="setOnToast();"/>
+            <input type="button" id="btnStop" value="Stop" onclick="setOffToast();"/>
         </div>
 		<div>
 			<label id="lblPantry">Pantry</label>
@@ -31,39 +38,100 @@
         </div>
     </div>
 </div>
+<br />
+<div class="row">
+	<div id="divSalidaRdos" style='border:1px solid black; height:100px;'>
+	</div>
+</div>
+
 <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+
 <script>
-    var uri = 'http://localhost:23732/api/toaster/';
+    var cabeceraUri = 'http://localhost:8099/api';
 
-    function currentStatus() {
+	var urls = {
 
-        $.ajax({
-            type: "GET",
-            url: uri + "GetCurrentStatus",
-            contentType: "application/json;charset=utf-8",
-            success: function (data, status, xhr) {
-                alert('ok');
-            },
-            error: function (xhr) {
-                alert(xhr.responseText);
-            }
-        });
-    }
+		'howmanybreads': {
+			"tipo":'GET',
+			"url": cabeceraUri +'/pantry/howmanybreads/'
+		},
+		/* --Toaster--*/
+		'settime':{
+			"tipo":'PATCH',
+			"url": cabeceraUri + '/toaster/SetTime/'
+		},
+		'settoasts':{
+			"tipo":'PATCH',
+			"url": cabeceraUri + '/toaster/SetToasts/'
+		},
+		'getcurrentstatus': {
+			"tipo":'GET',
+			"url": cabeceraUri +'/toaster/GetCurrentStatus/'
+		},
+		'setontoast':{
+			"tipo": 'PUT',
+			"url": cabeceraUri + '/api/Toaster/api/toasters/toast/1'
+		},
+		'setofftoast':{
+			"tipo": 'PUT',
+			"url": cabeceraUri + '/api/Toaster/api/toasters/toast/0'
+		},
+	};
+
+	/* ------Toaster--------*/
+
+	function setTime(){
+		var minutesToSeconds = document.getElementById('minutesInput').value * 60;
+		var seconds =  document.getElementById('secondsInput').value * 1; //!IMP *1
+		var totalSeconds = parseInt(parseInt(minutesToSeconds,10) + parseInt(seconds,10));
+		
+		llamadaAjax(urls["settime"], totalSeconds)
+	};
+
+	function setToasts(){
+		var toasts = document.getElementById('toastsInput').value * 1;
+		llamadaAjax(urls["settoasts"], toasts);
+	};
+
+	 function currentStatus() {
+		llamadaAjax(urls["getcurrentstatus"]);
+    };
+
+	function setOnToast(){
+		llamadaAjax(urls["setontoast"]);
+
+	};
+
+	function setOffToast(){
+		llamadaAjax(urls["setontoast"]);
+	};
+
+	function setProfile(){
+		
+	}
+
+	/* ------Pantry--------*/
 
 	function howManyBreads(){
+		llamadaAjax(urls["howmanybreads"]);
+	};
 
-	  $.ajax({
-            type: "GET",
-            url: 'http://localhost:8099/api/pantry/howmanybreads/',
+	function llamadaAjax(objLlamada,params){
+		//console.log('params:'+ params);
+		
+		  $.ajax({
+            type: objLlamada['tipo'],
+            url: (params && (params != null) && (params != 'undefined') ) ? (objLlamada['url'] + params) : objLlamada['url'],
             contentType: "application/json;charset=utf-8",
             success: function (data, status, xhr) {
-                //alert('ok');
-				alert('Number of breads: ' + data);
+				//alert(data);
+				//document.getElementById('divSalidaRdos').
+				//console.log('data:'+data);
+				$('#divSalidaRdos').append('<p>'+data+'</p>');
             },
             error: function (xhr) {
-                alert(xhr.responseText);
+                $('#divSalidaRdos').append('<p>'+ xhr.responseText + '</p>');
             }
         });
-
 	}
 </script>
