@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+	
 }
 
 <div class="row">
@@ -19,10 +20,10 @@
         </div>
 		<div>
 			<label id="lblToasts">Profile</label>
-			<input type="radio" name="gender" value="male">Burnt</input>
-			<input type="radio" name="gender" value="female">High</input>
-			<input type="radio" name="gender" value="other">Normal</input>
-			<input type="radio" name="gender" value="other">Low</input>
+			<input type="radio" name="profile" value="4" onclick="setProfile(this.value)">Burnt</input>
+			<input type="radio" name="profile" value="3" onclick="setProfile(this.value)">High</input>
+			<input type="radio" name="profile" value="2" onclick="setProfile(this.value)">Normal</input>
+			<input type="radio" name="profile" value="1" onclick="setProfile(this.value)">Low</input>
 		</div>
         <div>
             <input type="button" id="btnStatus" value="Current Status" onclick="currentStatus();" />
@@ -40,14 +41,14 @@
 </div>
 <br />
 <div class="row">
-	<div id="divSalidaRdos" style='border:1px solid black; height:100px;'>
+	<div id="divSalidaRdos" style='border:1px solid black; '>
 	</div>
 </div>
 
 <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
 
 <script>
-    var cabeceraUri = 'http://localhost:8099/api';
+    var cabeceraUri = 'http://localhost:@ViewBag.Puerto/api';
 
 	var urls = {
 
@@ -70,12 +71,16 @@
 		},
 		'setontoast':{
 			"tipo": 'PUT',
-			"url": cabeceraUri + '/api/Toaster/api/toasters/toast/1'
+			"url": cabeceraUri + '/Toaster/api/toasters/toast/1'
 		},
 		'setofftoast':{
 			"tipo": 'PUT',
-			"url": cabeceraUri + '/api/Toaster/api/toasters/toast/0'
+			"url": cabeceraUri + '/Toaster/api/toasters/toast/0'
 		},
+		'setprofile':{
+			"tipo": 'PATCH',
+			"url": cabeceraUri + '/Toaster/setProfile/'
+		}
 	};
 
 	/* ------Toaster--------*/
@@ -106,8 +111,8 @@
 		llamadaAjax(urls["setontoast"]);
 	};
 
-	function setProfile(){
-		
+	function setProfile(valor){
+		llamadaAjax(urls["setprofile"],valor);
 	}
 
 	/* ------Pantry--------*/
