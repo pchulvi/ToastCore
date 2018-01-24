@@ -63,6 +63,17 @@ namespace ToastCore.Controllers
             return StatusCode(200, _toaster.ToastsMade);
         }
 
+        /// <summary>
+        /// Gets the profile of the IToast
+        /// </summary>
+        /// <returns>Current profile of the IToast</returns>
+        [HttpGet("/api/toaster/GetCurrentProfile")]
+        [EnableCors("MyPolicy")]
+        public IActionResult GetCurrentProfile()
+        {
+            return StatusCode(200, _toaster.Profile);
+        }
+
         #endregion
 
         #region PATCH Methods
