@@ -27,6 +27,7 @@
 			<input type="radio" name="profile" value="3" onclick="setProfile(this.value)">High</input>
 			<input type="radio" name="profile" value="2" onclick="setProfile(this.value)">Normal</input>
 			<input type="radio" name="profile" value="1" onclick="setProfile(this.value)">Low</input>
+			<input type="button" id="btnCurrentProfile" value="Current Profile" onclick="getCurrentProfile()" />
 		</div>
         <div>
             <input type="button" id="btnStatus" value="Current Status" onclick="currentStatus();" />
@@ -37,7 +38,8 @@
 		<h2>Pantry</h2>
 		<div>
 			<input type="button" id="btnGetStatus" value="Status" onclick="getPantryStatus();" />
-			<input type="button" id="btnHowMany" value="How Many Breads" onclick="howManyBreads();" /><br />
+			<input type="button" id="btnHowMany" value="How Many Breads" onclick="howManyBreads();" />
+			<input type="button" id="btnPantryHasBread" value="Has Bread?" onclick="pantryHasBread();" /><br />
 			<input id="inputBreadsToBuy" type="number" min="0" max="100" placeholder="000" maxlength="3" />
 			<input type="button" id="btnBuyBread" value="Buy bread" onclick="buyBread();" />
 		</div>
@@ -96,6 +98,10 @@
 			"tipo": 'PUT',
 			"url": cabeceraUri + '/toaster/api/toasters/reset'
 		},
+		'getcurrentprofile':{
+			"tipo": 'PUT',
+			"url": cabeceraUri + '/toaster/GetCurrentProfile'
+		},
 		/*-- Pantry --*/
 		'buybread':{
 			"tipo": 'POST',
@@ -104,6 +110,10 @@
 		'getpantrystatus':{
 			"tipo": 'GET',
 			"url": cabeceraUri + '/pantry/status/'
+		},
+		'pantryhasbread':{
+			"tipo": 'GET',
+			"url": cabeceraUri + '/pantry/hasbread/'
 		}
 
 	};
@@ -119,55 +129,56 @@
 		}
 
 		var totalSeconds = parseInt(parseInt(minutesToSeconds,10) + parseInt(seconds,10));
-
 		
-		llamadaAjax(urls["settime"], totalSeconds)
+		callAjax(urls["settime"], totalSeconds)
 	};
 
 	function setToasts(){
 		var toasts = document.getElementById('toastsInput').value * 1;
-		llamadaAjax(urls["settoasts"], toasts);
+		callAjax(urls["settoasts"], toasts);
 	};
 
 	 function currentStatus() {
-		llamadaAjax(urls["getcurrentstatus"]);
+		callAjax(urls["getcurrentstatus"]);
     };
 
 	function setOnToast(){
-		llamadaAjax(urls["setontoast"]);
+		callAjax(urls["setontoast"]);
 
 	};
 
 	function setOffToast(){
-		llamadaAjax(urls["setofftoast"]);
+		callAjax(urls["setofftoast"]);
 	};
 
 	function setProfile(valor){
-		llamadaAjax(urls["setprofile"],valor);
+		callAjax(urls["setprofile"],valor);
 	};
 
 	function howManyToastsMade(){
-		llamadaAjax(urls["howmanytoastsmade"]);
+		callAjax(urls["howmanytoastsmade"]);
 	};
 	
 	function toasterOff(){
-		llamadaAjax(urls["toasteroff"]);
+		callAjax(urls["toasteroff"]);
 	};
 
-	function buybread(){
-		llamadaAjax(urls["buybread"]);
+	function getCurrentProfile(){
+		callAjax(urls["getcurrentprofile"]);
 	};
-
-	function getPantryStatus(){
-		llamadaAjax(urls["getpantrystatus"]);
-	}
+	
 
 
 	/* ------Pantry--------*/
 
 	function howManyBreads(){
-		llamadaAjax(urls["howmanybreads"]);
+		callAjax(urls["howmanybreads"]);
 	};
+
+	function getPantryStatus(){
+		callAjax(urls["getpantrystatus"]);
+	}
+
 
 	function buyBread(){
 		var iBreadsToBuy = parseInt($('#inputBreadsToBuy').val() * 1);
@@ -176,12 +187,16 @@
 			errormessages("Can't buy less 1 bread");
 			return;
 		};
-		llamadaAjax(urls["buybread"], iBreadsToBuy);
+		callAjax(urls["buybread"], iBreadsToBuy);
 	};
+
+	function pantryHasBread(){
+		callAjax(urls["pantryhasbread"]);
+	}
 
 	/* -------------------- */
 
-	function llamadaAjax(objLlamada,params){
+	function callAjax(objLlamada,params){
 		console.log('params:'+ params);
 		
 		  $.ajax({

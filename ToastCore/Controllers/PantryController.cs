@@ -29,6 +29,7 @@ namespace ToastCore.Controllers
         /// <response code="200">Ok. Returns nbreads</response>
         /// <response code="500">Error 500</response>
         [HttpPut("/api/pantry/breads/{nBreads}")]
+        [EnableCors("MyPolicy")]
         public IActionResult PutBreads(int nBreads)
         {
             _pantry.NumberOfBreads = nBreads;
@@ -54,6 +55,7 @@ namespace ToastCore.Controllers
         /// <response code="417">Error in GetBreads</response>
         /// <response code="500">Error 500</response>
         [HttpGet("/api/pantry/breads/{nBreads}")]
+        [EnableCors("MyPolicy")]
         public IActionResult GetBreads(int nBreads)
         {
             if (nBreads > 2)
@@ -118,6 +120,7 @@ namespace ToastCore.Controllers
         /// <response code="200">Ok. Returns StatusPantry</response>
         /// <response code="500">Error 500</response>
         [HttpGet("/api/pantry/status")]
+        [EnableCors("MyPolicy")]
         public IActionResult GetStatus()
         {
             //Pantry pantry = _context.Pantries.FirstOrDefault();
@@ -151,6 +154,7 @@ namespace ToastCore.Controllers
         /// <param name="nBreads"></param>
         /// <returns>Returns total breads bought</returns>
         [HttpPost("/api/pantry/breads/buy/{nBreads}")]
+        [EnableCors("MyPolicy")]
         public IActionResult BuyToSupermarket(int nBreads)
         {
             int breads = 0;
@@ -187,6 +191,7 @@ namespace ToastCore.Controllers
         /// <returns>A number of breads (as int)</returns>
         //[ApiExplorerSettings(IgnoreApi = true)]
         [HttpGet("/api/pantry/howmanybreads")]
+        [EnableCors("MyPolicy")]
         public int HowManyBreads()
         {
             return _pantry.NumberOfBreads;
