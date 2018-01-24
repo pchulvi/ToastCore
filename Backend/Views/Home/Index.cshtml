@@ -1,4 +1,9 @@
-﻿@{
+@using Microsoft.Extensions.Options;
+@using Backend.Configuration;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+﻿
+@{
     ViewData["Title"] = "Home Page";
 	
 }
@@ -57,8 +62,9 @@
 <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
 
 <script>
-    var cabeceraUri = 'http://localhost:@ViewBag.Puerto/api';
-
+ 
+  var cabeceraUri = 'http://localhost:@OptionsApplicationConfiguration.Value.ApplicationPort/api';
+  
 	var urls = {
 
 		'howmanybreads': {
