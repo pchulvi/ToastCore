@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToastCore.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace ToastCore.Controllers
 {
@@ -104,6 +105,7 @@ namespace ToastCore.Controllers
         /// <returns>Boolean</returns>
         /// <response code="200">Has bread the IToast?</response>
         [HttpGet("/api/pantry/hasbread")]
+        [EnableCors("MyPolicy")]
         public IActionResult HasBread()
         {
             return StatusCode(200, (this.HowManyBreads() > 0).ToString());
