@@ -1,6 +1,11 @@
-﻿@{
+﻿@using Microsoft.Extensions.Options;
+@using Backend.Configuration;
+
+@inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
+ 
+@{
     ViewData["Title"] = "Home Page";
-	
+
 }
 
 <div class="row">
@@ -44,99 +49,98 @@
 	<div id="divSalidaRdos" style='border:1px solid black; '>
 	</div>
 </div>
-
 <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
 
 <script>
-    var cabeceraUri = 'http://localhost:@ViewBag.Puerto/api';
+    var cabeceraUri = 'http://localhost:@OptionsApplicationConfiguration.Value.ApplicationPort/api';
 
-	var urls = {
+    var urls = {
 
-		'howmanybreads': {
-			"tipo":'GET',
-			"url": cabeceraUri +'/pantry/howmanybreads/'
-		},
-		/* --Toaster--*/
-		'settime':{
-			"tipo":'PATCH',
-			"url": cabeceraUri + '/toaster/SetTime/'
-		},
-		'settoasts':{
-			"tipo":'PATCH',
-			"url": cabeceraUri + '/toaster/SetToasts/'
-		},
-		'getcurrentstatus': {
-			"tipo":'GET',
-			"url": cabeceraUri +'/toaster/GetCurrentStatus/'
-		},
-		'setontoast':{
-			"tipo": 'PUT',
-			"url": cabeceraUri + '/Toaster/api/toasters/toast/1'
-		},
-		'setofftoast':{
-			"tipo": 'PUT',
-			"url": cabeceraUri + '/Toaster/api/toasters/toast/0'
-		},
-		'setprofile':{
-			"tipo": 'PATCH',
-			"url": cabeceraUri + '/Toaster/setProfile/'
-		}
-	};
-
-	/* ------Toaster--------*/
-
-	function setTime(){
-		var minutesToSeconds = document.getElementById('minutesInput').value * 60;
-		var seconds =  document.getElementById('secondsInput').value * 1; //!IMP *1
-		var totalSeconds = parseInt(parseInt(minutesToSeconds,10) + parseInt(seconds,10));
-		
-		llamadaAjax(urls["settime"], totalSeconds)
-	};
-
-	function setToasts(){
-		var toasts = document.getElementById('toastsInput').value * 1;
-		llamadaAjax(urls["settoasts"], toasts);
-	};
-
-	 function currentStatus() {
-		llamadaAjax(urls["getcurrentstatus"]);
+        'howmanybreads': {
+            "tipo": 'GET',
+            "url": cabeceraUri + '/pantry/howmanybreads/'
+        },
+        /* --Toaster--*/
+        'settime': {
+            "tipo": 'PATCH',
+            "url": cabeceraUri + '/toaster/SetTime/'
+        },
+        'settoasts': {
+            "tipo": 'PATCH',
+            "url": cabeceraUri + '/toaster/SetToasts/'
+        },
+        'getcurrentstatus': {
+            "tipo": 'GET',
+            "url": cabeceraUri + '/toaster/GetCurrentStatus/'
+        },
+        'setontoast': {
+            "tipo": 'PUT',
+            "url": cabeceraUri + '/Toaster/api/toasters/toast/1'
+        },
+        'setofftoast': {
+            "tipo": 'PUT',
+            "url": cabeceraUri + '/Toaster/api/toasters/toast/0'
+        },
+        'setprofile': {
+            "tipo": 'PATCH',
+            "url": cabeceraUri + '/Toaster/setProfile/'
+        }
     };
 
-	function setOnToast(){
-		llamadaAjax(urls["setontoast"]);
+    /* ------Toaster--------*/
 
-	};
+    function setTime() {
+        var minutesToSeconds = document.getElementById('minutesInput').value * 60;
+        var seconds = document.getElementById('secondsInput').value * 1; //!IMP *1
+        var totalSeconds = parseInt(parseInt(minutesToSeconds, 10) + parseInt(seconds, 10));
 
-	function setOffToast(){
-		llamadaAjax(urls["setontoast"]);
-	};
+        llamadaAjax(urls["settime"], totalSeconds)
+    };
 
-	function setProfile(valor){
-		llamadaAjax(urls["setprofile"],valor);
-	}
+    function setToasts() {
+        var toasts = document.getElementById('toastsInput').value * 1;
+        llamadaAjax(urls["settoasts"], toasts);
+    };
 
-	/* ------Pantry--------*/
+    function currentStatus() {
+        llamadaAjax(urls["getcurrentstatus"]);
+    };
 
-	function howManyBreads(){
-		llamadaAjax(urls["howmanybreads"]);
-	};
+    function setOnToast() {
+        llamadaAjax(urls["setontoast"]);
 
-	function llamadaAjax(objLlamada,params){
-		//console.log('params:'+ params);
-		
-		  $.ajax({
+    };
+
+    function setOffToast() {
+        llamadaAjax(urls["setontoast"]);
+    };
+
+    function setProfile(valor) {
+        llamadaAjax(urls["setprofile"], valor);
+    }
+
+    /* ------Pantry--------*/
+
+    function howManyBreads() {
+        llamadaAjax(urls["howmanybreads"]);
+    };
+
+    function llamadaAjax(objLlamada, params) {
+        //console.log('params:'+ params);
+
+        $.ajax({
             type: objLlamada['tipo'],
-            url: (params && (params != null) && (params != 'undefined') ) ? (objLlamada['url'] + params) : objLlamada['url'],
+            url: (params && (params != null) && (params != 'undefined')) ? (objLlamada['url'] + params) : objLlamada['url'],
             contentType: "application/json;charset=utf-8",
             success: function (data, status, xhr) {
-				//alert(data);
-				//document.getElementById('divSalidaRdos').
-				//console.log('data:'+data);
-				$('#divSalidaRdos').append('<p>'+data+'</p>');
+                //alert(data);
+                //document.getElementById('divSalidaRdos').
+                //console.log('data:'+data);
+                $('#divSalidaRdos').append('<p>' + data + '</p>');
             },
             error: function (xhr) {
-                $('#divSalidaRdos').append('<p>'+ xhr.responseText + '</p>');
+                $('#divSalidaRdos').append('<p>' + xhr.responseText + '</p>');
             }
         });
-	}
+    }
 </script>
