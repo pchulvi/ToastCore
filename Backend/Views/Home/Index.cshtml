@@ -88,7 +88,13 @@
 	function setTime(){
 		var minutesToSeconds = document.getElementById('minutesInput').value * 60;
 		var seconds =  document.getElementById('secondsInput').value * 1; //!IMP *1
+		if (minutesToSeconds == 0 && seconds == 0) {
+			errormessages("Revise el tiempo. Debe tener al menos un segundo.");
+			return;
+		}
+
 		var totalSeconds = parseInt(parseInt(minutesToSeconds,10) + parseInt(seconds,10));
+
 		
 		llamadaAjax(urls["settime"], totalSeconds)
 	};
@@ -132,11 +138,23 @@
 				//alert(data);
 				//document.getElementById('divSalidaRdos').
 				//console.log('data:'+data);
-				$('#divSalidaRdos').append('<p>'+data+'</p>');
+				//$('#divSalidaRdos').append('<p>'+data+'</p>');
+				messages(data);
             },
             error: function (xhr) {
-                $('#divSalidaRdos').append('<p>'+ xhr.responseText + '</p>');
+				errormessages(xhr.responseText);
+                //$('#divSalidaRdos').append('<p>'+ xhr.responseText + '</p>');
             }
         });
+	};
+
+	function messages(msj){
+		$('#divSalidaRdos').append('<p class="text-dark font-weight-bold">'+msj+'</p>');
 	}
+
+	function errormessages(msj){
+		$('#divSalidaRdos').append('<p class="text-danger font-weight-bold">'+msj+'</p>');
+	}
+
+
 </script>
