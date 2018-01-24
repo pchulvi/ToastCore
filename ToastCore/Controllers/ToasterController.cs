@@ -1,15 +1,9 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using ToastCore.Models;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System;
-using Microsoft.AspNetCore.Http;
-using System.Net.Http;
-using System.Text;
-using System.Net.Http.Headers;
-using System.Net;
-//using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Cors;
 
 namespace ToastCore.Controllers
 {
@@ -39,6 +33,7 @@ namespace ToastCore.Controllers
         /// </summary>
         /// <returns>Toaster data</returns>
         [HttpGet("/api/toaster/GetToasters")]
+        [EnableCors("MyPolicy")]
         public IQueryable<Toaster> GetToaster()
         {
             return _context.Toasters;
@@ -50,7 +45,7 @@ namespace ToastCore.Controllers
         /// <returns>Current status of the toaster</returns>
         /// <response code="200">Current status of the IToast</response>
         [HttpGet("/api/toaster/GetCurrentStatus")]
-        //[EnableCors("MyPolicy")]
+        [EnableCors("MyPolicy")]
         public IActionResult GetCurrentStatus()
         {
             return StatusCode(200, _toaster.Status);
@@ -62,6 +57,7 @@ namespace ToastCore.Controllers
         /// <returns>Number of toasts made by our current toaster</returns>
         /// <response code="200">Number of toasts made by the IToast</response>
         [HttpGet("/api/toaster/HowManyToastsMade")]
+        [EnableCors("MyPolicy")]
         public IActionResult HowManyToastsMade()
         {
             return StatusCode(200, _toaster.ToastsMade);
@@ -78,6 +74,7 @@ namespace ToastCore.Controllers
         /// <returns>Number of seconds set</returns>
         /// <response code="200">Number of seconds set</response>
         [HttpPatch("/api/toaster/SetTime/{time}")]
+        [EnableCors("MyPolicy")]
         public IActionResult SetTime(int time)
         {
             _toaster.Time = time;
@@ -105,6 +102,7 @@ namespace ToastCore.Controllers
         /// <response code="200">Profile set</response>
         /// <response code="417">Profile error</response>
         [HttpPatch("/api/toaster/SetProfile/{profile}")]
+        [EnableCors("MyPolicy")]
         public IActionResult SetProfile(Profile profile)
         {
             _toaster.Profile = profile;
@@ -152,6 +150,7 @@ namespace ToastCore.Controllers
         /// <response code="200">Number of toasts in the toaster</response>
         /// <response code="417">Error in the number of toasts</response>
         [HttpPatch("/api/toaster/SetToasts/{numToasts}")]
+        [EnableCors("MyPolicy")]
         public IActionResult SetToasts(int numToasts)
         {
             if (numToasts > 2)
@@ -189,6 +188,7 @@ namespace ToastCore.Controllers
         /// <response code="200">Message with the current status of the IToast</response>
         /// <response code="417">Error: IToast is already Off</response>
         [HttpPut("api/toasters/reset")]
+        [EnableCors("MyPolicy")]
         public IActionResult ResetToaster()
         {
             if (_toaster.Status == Status.Off) return StatusCode(417, String.Format("IToast status is: {0}", _toaster.Status));
@@ -209,6 +209,7 @@ namespace ToastCore.Controllers
         /// <response code="200">Message with the current status of the IToast</response>
         /// <response code="417">Error: No bread in the Toaster</response>
         [HttpPut("api/toasters/toast/{status}")]
+        [EnableCors("MyPolicy")]
         public IActionResult Toast(Status status)
         {
             if (_toaster.Status == status) return StatusCode(200, String.Format("IToast status is: {0}", _toaster.Status));
@@ -262,6 +263,7 @@ namespace ToastCore.Controllers
         /// <returns>Current status of the toaster</returns>
         /// <response code="200">Message with the current status of the IToast</response>
         [HttpPut("api/toaster/toast/numToasts/{numToasts}/time/{time}")]
+        [EnableCors("MyPolicy")]
         public IActionResult Toast(int numToasts, int time)
         {
             try

@@ -24,7 +24,7 @@
         </div>
 		<div>
 			<label id="lblPantry">Pantry</label>
-			<input type="button" id="btnHowMany" value="How Many Breads" onclick="howManyBreads();" />
+			<input type="button" id="btnHowMany" value="Has Bread" onclick="hasBread();" />
 		</div>
         <div>
             
@@ -33,16 +33,16 @@
 </div>
 <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
 <script>
-    var uri = 'http://localhost:23732/api/toaster/';
+    var uri = 'http://localhost:8077/api/toaster/';
 
     function currentStatus() {
 
         $.ajax({
             type: "GET",
-            url: uri + "GetCurrentStatus",
+            url: 'http://localhost:8077/api/toaster/GetCurrentStatus/', /*uri + "GetCurrentStatus",*/
             contentType: "application/json;charset=utf-8",
             success: function (data, status, xhr) {
-                alert('ok');
+                alert(data);
             },
             error: function (xhr) {
                 alert(xhr.responseText);
@@ -50,15 +50,16 @@
         });
     }
 
-	function howManyBreads(){
+	function hasBread(){
+
 
 	  $.ajax({
             type: "GET",
-            url: 'http://localhost:8099/api/pantry/howmanybreads/',
+            url: 'http://localhost:8077/api/pantry/hasbread/',
             contentType: "application/json;charset=utf-8",
             success: function (data, status, xhr) {
                 //alert('ok');
-				alert('Number of breads: ' + data);
+				alert(data);
             },
             error: function (xhr) {
                 alert(xhr.responseText);

@@ -79,8 +79,8 @@ namespace ToastCore
             app.UseDatabaseErrorPage();
            
 
-            //// Enable Cors
-            //app.UseCors("MyPolicy");
+            // Enable Cors
+            app.UseCors("MyPolicy");
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
