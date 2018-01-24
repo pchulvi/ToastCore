@@ -127,10 +127,9 @@ namespace ToastCore.Controllers
             PantryStatus pStatus = _pantry.Status;
 
             if (howManyBreads == 0) pStatus=PantryStatus.Empty;
+            if (howManyBreads > 10 && howManyBreads <= 90) pStatus = PantryStatus.Normal;
             if (howManyBreads <= 10) pStatus= PantryStatus.AlmostEmpty;
             if (howManyBreads > 90) pStatus= PantryStatus.Full;
-
-            pStatus=PantryStatus.Normal;
 
             _pantry.Status = pStatus;
 
