@@ -52,39 +52,66 @@
 <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
 
 <script>
-    var cabeceraUri = 'http://localhost:@OptionsApplicationConfiguration.Value.ApplicationPort/api';
+  
+  var cabeceraUri = 'http://localhost:@OptionsApplicationConfiguration.Value.ApplicationPort/api';
+  var cabeceraUri = 'http://localhost:@ViewBag.Puerto/api';
 
-    var urls = {
+	var urls = {
 
-        'howmanybreads': {
-            "tipo": 'GET',
-            "url": cabeceraUri + '/pantry/howmanybreads/'
-        },
-        /* --Toaster--*/
-        'settime': {
-            "tipo": 'PATCH',
-            "url": cabeceraUri + '/toaster/SetTime/'
-        },
-        'settoasts': {
-            "tipo": 'PATCH',
-            "url": cabeceraUri + '/toaster/SetToasts/'
-        },
-        'getcurrentstatus': {
-            "tipo": 'GET',
-            "url": cabeceraUri + '/toaster/GetCurrentStatus/'
-        },
-        'setontoast': {
-            "tipo": 'PUT',
-            "url": cabeceraUri + '/Toaster/api/toasters/toast/1'
-        },
-        'setofftoast': {
-            "tipo": 'PUT',
-            "url": cabeceraUri + '/Toaster/api/toasters/toast/0'
-        },
-        'setprofile': {
-            "tipo": 'PATCH',
-            "url": cabeceraUri + '/Toaster/setProfile/'
-        }
+		'howmanybreads': {
+			"tipo":'GET',
+			"url": cabeceraUri +'/pantry/howmanybreads/'
+		},
+		/* --Toaster--*/
+		'settime':{
+			"tipo":'PATCH',
+			"url": cabeceraUri + '/toaster/SetTime/'
+		},
+		'settoasts':{
+			"tipo":'PATCH',
+			"url": cabeceraUri + '/toaster/SetToasts/'
+		},
+		'getcurrentstatus': {
+			"tipo":'GET',
+			"url": cabeceraUri +'/toaster/GetCurrentStatus/'
+		},
+		'setontoast':{
+			"tipo": 'PUT',
+			"url": cabeceraUri + '/Toaster/api/toasters/toast/1'
+		},
+		'setofftoast':{
+			"tipo": 'PUT',
+			"url": cabeceraUri + '/Toaster/api/toasters/toast/0'
+		},
+		'setprofile':{
+			"tipo": 'PATCH',
+			"url": cabeceraUri + '/Toaster/setProfile/'
+		}
+	};
+
+	/* ------Toaster--------*/
+
+	function setTime(){
+		var minutesToSeconds = document.getElementById('minutesInput').value * 60;
+		var seconds =  document.getElementById('secondsInput').value * 1; //!IMP *1
+		if (minutesToSeconds == 0 && seconds == 0) {
+			errormessages("Revise el tiempo. Debe tener al menos un segundo.");
+			return;
+		}
+
+		var totalSeconds = parseInt(parseInt(minutesToSeconds,10) + parseInt(seconds,10));
+
+		
+		llamadaAjax(urls["settime"], totalSeconds)
+	};
+
+	function setToasts(){
+		var toasts = document.getElementById('toastsInput').value * 1;
+		llamadaAjax(urls["settoasts"], toasts);
+	};
+
+	 function currentStatus() {
+		llamadaAjax(urls["getcurrentstatus"]);
     };
 
     /* ------Toaster--------*/
@@ -133,14 +160,27 @@
             url: (params && (params != null) && (params != 'undefined')) ? (objLlamada['url'] + params) : objLlamada['url'],
             contentType: "application/json;charset=utf-8",
             success: function (data, status, xhr) {
-                //alert(data);
-                //document.getElementById('divSalidaRdos').
-                //console.log('data:'+data);
-                $('#divSalidaRdos').append('<p>' + data + '</p>');
+
+				//alert(data);
+				//document.getElementById('divSalidaRdos').
+				//console.log('data:'+data);
+				//$('#divSalidaRdos').append('<p>'+data+'</p>');
+				messages(data);
             },
             error: function (xhr) {
-                $('#divSalidaRdos').append('<p>' + xhr.responseText + '</p>');
+				errormessages(xhr.responseText);
+                //$('#divSalidaRdos').append('<p>'+ xhr.responseText + '</p>');
             }
         });
-    }
+	};
+
+	function messages(msj){
+		$('#divSalidaRdos').append('<p class="text-dark font-weight-bold">'+msj+'</p>');
+	}
+
+	function errormessages(msj){
+		$('#divSalidaRdos').append('<p class="text-danger font-weight-bold">'+msj+'</p>');
+	}
+
+
 </script>

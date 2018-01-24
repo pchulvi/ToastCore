@@ -186,11 +186,22 @@ namespace ToastCore.Controllers
         /// How many breads are in our pantry
         /// </summary>
         /// <returns>A number of breads (as int)</returns>
-        [ApiExplorerSettings(IgnoreApi = true)]
-        [HttpGet]
+        //[ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet("/api/pantry/howmanybreads")]
         public int HowManyBreads()
         {
             return _pantry.NumberOfBreads;
         }
+
+        ///// <summary>
+        ///// How many breads are in our pantry
+        ///// </summary>
+        ///// <returns>A number of breads (as int)</returns>
+        //[HttpGet]
+        //[EnableCors("MyPolicy")]
+        //public int HowManyBreadsInPantry()
+        //{
+        //    return _pantry.NumberOfBreads;
+        //}
     }
 }
