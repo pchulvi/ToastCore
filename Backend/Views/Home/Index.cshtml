@@ -53,9 +53,12 @@
         </div>
     </div>
 </div>
-<br />
+
+
 <div class="row">
-	<div id="divSalidaRdos" style='border:1px solid black; '>
+<h2>Output Screen</h2>
+	<input type="button" id="btnClearOutput" value="Limpiar" onclick="clearOutput()" />
+	<div id="divOutputResults" style='border:1px solid black; height: 350px; overflow-y: scroll; '>
 	</div>
 </div>
 
@@ -63,63 +66,67 @@
 
 <script>
  
-  var cabeceraUri = 'http://localhost:@OptionsApplicationConfiguration.Value.ApplicationPort/api';
+ function clearOutput(){
+	$('#divOutputResults').empty();
+ };
+
+  var uriHead = 'http://localhost:@OptionsApplicationConfiguration.Value.ApplicationPort/api';
   
 	var urls = {
 
 		'howmanybreads': {
 			"tipo":'GET',
-			"url": cabeceraUri +'/pantry/howmanybreads/'
+			"url": uriHead +'/pantry/howmanybreads/'
 		},
 		/* --Toaster--*/
 		'settime':{
 			"tipo":'PATCH',
-			"url": cabeceraUri + '/toaster/SetTime/'
+			"url": uriHead + '/toaster/SetTime/'
 		},
 		'settoasts':{
 			"tipo":'PATCH',
-			"url": cabeceraUri + '/toaster/SetToasts/'
+			"url": uriHead + '/toaster/SetToasts/'
 		},
 		'getcurrentstatus': {
 			"tipo":'GET',
-			"url": cabeceraUri +'/toaster/GetCurrentStatus/'
+			"url": uriHead +'/toaster/GetCurrentStatus/'
 		},
 		'setontoast':{
 			"tipo": 'PUT',
-			"url": cabeceraUri + '/Toaster/api/toasters/toast/1'
+			"url": uriHead + '/Toaster/api/toasters/toast/1'
 		},
 		'setofftoast':{
 			"tipo": 'PUT',
-			"url": cabeceraUri + '/Toaster/api/toasters/toast/0'
+			"url": uriHead + '/Toaster/api/toasters/toast/0'
 		},
 		'setprofile':{
 			"tipo": 'PATCH',
-			"url": cabeceraUri + '/Toaster/setProfile/'
+			"url": uriHead + '/Toaster/setProfile/'
 		},
 		'howmanytoastsmade':{
 			"tipo": 'GET',
-			"url": cabeceraUri + '/toaster/HowManyToastsMade'
+			"url": uriHead + '/toaster/HowManyToastsMade'
 		},
 		'toasteroff':{
 			"tipo": 'PUT',
-			"url": cabeceraUri + '/toaster/api/toasters/reset'
+			"url": uriHead + '/toaster/api/toasters/reset'
 		},
 		'getcurrentprofile':{
-			"tipo": 'PUT',
-			"url": cabeceraUri + '/toaster/GetCurrentProfile'
+			"tipo": 'GET',
+			"url": uriHead + '/toaster/GetCurrentProfile'
 		},
 		/*-- Pantry --*/
 		'buybread':{
 			"tipo": 'POST',
-			"url": cabeceraUri + '/pantry/breads/buy/'
+			"url": uriHead + '/pantry/breads/buy/'
 		},
 		'getpantrystatus':{
 			"tipo": 'GET',
-			"url": cabeceraUri + '/pantry/status/'
+			"url": uriHead + '/pantry/status/'
 		},
 		'pantryhasbread':{
 			"tipo": 'GET',
-			"url": cabeceraUri + '/pantry/hasbread/'
+			"url": uriHead + '/pantry/hasbread/'
 		}
 
 	};
@@ -202,28 +209,28 @@
 
 	/* -------------------- */
 
-	function callAjax(objLlamada,params){
+	function callAjax(objCalled,params){
 		console.log('params:'+ params);
 		
 		  $.ajax({
-            type: objLlamada['tipo'],
-            url: (params && (params != null) && (params != 'undefined') ) ? (objLlamada['url'] + params) : objLlamada['url'],
+            type: objCalled['tipo'],
+            url: (params && (params != null) && (params != 'undefined') ) ? (objCalled['url'] + params) : objCalled['url'],
             contentType: "application/json;charset=utf-8",
             success: function (data, status, xhr) {
-				messages('('+objLlamada['url']+'): '+data);
+				messages('('+objCalled['url']+'): '+data);
             },
             error: function (xhr) {
-				errormessages('('+objLlamada['url']+'): '+xhr.responseText);
+				errormessages('('+objCalled['url']+'): '+xhr.responseText);
             }
         });
 	};
 
 	function messages(msj){
-		$('#divSalidaRdos').append('<p class="text-dark font-weight-bold">'+msj+'</p>');
+		$('#divOutputResults').append('<p class="text-dark font-weight-bold">'+msj+'</p>');
 	}
 
 	function errormessages(msj){
-		$('#divSalidaRdos').append('<p class="text-danger font-weight-bold">'+msj+'</p>');
+		$('#divOutputResults').append('<p class="text-danger font-weight-bold">'+msj+'</p>');
 	}
 
 
