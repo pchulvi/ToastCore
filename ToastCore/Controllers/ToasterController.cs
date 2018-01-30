@@ -74,6 +74,38 @@ namespace ToastCore.Controllers
             return StatusCode(200, _toaster.Profile);
         }
 
+        /// <summary>
+        /// Gets time remaining of IToast to finish toasting
+        /// </summary>
+        /// <returns>Time remaining in seconds</returns>
+        /// <response code="200">Number of seconds remaining</response>
+        /// <response code="417">Toasting time is finished</response>
+        [HttpGet("/api/toaster/timeRemaining")]
+        [EnableCors("MyPolicy")]
+        public IActionResult GetTimeRemaining()
+        {
+            try
+            {
+                //if (_toaster.Status.Equals(Status.Off)) return -1;
+                if (_toaster.Status.Equals(Status.Off)) return StatusCode(417, "-1");
+
+                if (DateTime.Parse(_toaster.TimeEnd) >= DateTime.Now)
+                {
+                    DateTime endTime = DateTime.Parse(_toaster.TimeEnd);
+                    return StatusCode(200, ((endTime - DateTime.Now).Minutes * 60) + (endTime - DateTime.Now).Seconds);
+                    //return ((endTime - DateTime.Now).Minutes * 60) + (endTime - DateTime.Now).Seconds;
+                }
+                else
+                    //return 0;
+                    return StatusCode(417, "-1");
+            }
+            catch(Exception ex)
+            {
+                //return -1;
+                return StatusCode(500, "Error: " + ex.Message);
+            }
+        }
+
         #endregion
 
         #region PATCH Methods

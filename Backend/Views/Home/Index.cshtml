@@ -4,73 +4,102 @@
 @inject IOptions<ApplicationConfigurations> OptionsApplicationConfiguration
 ﻿
 @{
-    ViewData["Title"] = "Home Page";
-	
+    ViewData["Title"] = "IToast";
 }
 
-<div class="row">
-    <div class="row-md-12" style="grid-row:span">
-	<h3>IToast Control Panel </h3>
-	<h2>Toaster</h2>
-        <div>
-            <label id="lblMinutes">Time </label>
-            <input id="minutesInput" type="number" min="0" max="59" placeholder="00" style="width: 45px" />
-            <span>:</span>
-            <input id="secondsInput" type="number" min="0" max="59" placeholder="00" maxlength="2" style="width: 45px" />
-            <input type="button" id="btnSetTime" value="Set Time" onclick="setTime()" />
+<div class="container">
+    <div class="container-fluid" style="grid-row:span">
+        <h2>Toaster</h2>
+        <div class="row">
+            <div class="col-md-2"><label id="lblMinutes">Time </label></div>
+            <div class="col-md-2">
+                <input id="minutesInput" type="number" min="0" max="59" placeholder="00" style="width: 45px" />
+                <span>:</span>
+                <input id="secondsInput" type="number" min="0" max="59" placeholder="00" maxlength="2" style="width: 45px" />
+            </div>
+            <div class="col-md-2"><input type="button" id="btnSetTime" value="Set Time" onclick="setTime()" /></div>
         </div>
-        <div>
-            <label id="lblToasts">Number of toasts</label>
-            <input type="number" id="toastsInput" min="0" placeholder="00" style="width: 45px" />
-            <input type="button" id="btnSetToasts" value="Set Toasts" onclick="setToasts()"  />
-			<input type="button" id="btnHowManyToasts" value="How Many Toasts Made" onclick="howManyToastsMade()" />
-			
+        <div class="row">
+            <div class="col-md-2"><label id="lblTimer">Time Remaining: </label></div>
+            <div class="col-md-2">
+                <input id="minutesRemaining" type="number" min="0" max="59" placeholder="00" style="width: 45px" disabled="disabled" />
+                <span>:</span>
+                <input id="secondsRemaining" type="number" min="0" max="59" placeholder="00" maxlength="2" style="width: 45px" disabled="disabled" />
+            </div>
         </div>
-		<div>
-			<label id="lblToasts">Profile</label>
-			<input type="radio" name="profile" value="4" onclick="setProfile(this.value)">Burnt</input>
-			<input type="radio" name="profile" value="3" onclick="setProfile(this.value)">High</input>
-			<input type="radio" name="profile" value="2" onclick="setProfile(this.value)">Normal</input>
-			<input type="radio" name="profile" value="1" onclick="setProfile(this.value)">Low</input>
-			<input type="button" id="btnCurrentProfile" value="Current Profile" onclick="getCurrentProfile()" />
-		</div>
-        <div>
-            <input type="button" id="btnStatus" value="Current Status" onclick="currentStatus();" />
-            <input type="button" id="btnStart" value="Toast!" onclick="setOnToast();"/>
-            <input type="button" id="btnStop" value="Stop" onclick="setOffToast();"/>
-			<input type="button" id="btnToasterReset" value="Toaster Off" onclick="toasterOff()" />
+        <div class="row">
+            <div class="col-md-2"><label id="lblToasts">Number of toasts: </label></div>
+            <div class="col-md-2"><input type="number" id="toastsInput" min="0" placeholder="00" style="width: 45px" /></div>
+            <div class="col-md-3"><input type="button" id="btnSetToasts" value="Set Toasts" onclick="setToasts()" /></div>
+            <div class="col-md-3"><input type="button" id="btnHowManyToasts" value="Toasts Made" onclick="howManyToastsMade()" /></div>
+
+            </div>
+        <div class="row">
+            <div class="col-md-2"><label id="lblProfile">Profile</label></div>
+            <div class="col-md-2"><input type="radio" name="profile" value="1" onclick="setProfile(this.value)">Low</></div>
+            <div class="col-md-2"><input type="radio" name="profile" value="2" onclick="setProfile(this.value)">Normal</></div>
+            <div class="col-md-2"><input type="radio" name="profile" value="3" onclick="setProfile(this.value)">High</></div>
+            <div class="col-md-2"><input type="radio" name="profile" value="4" onclick="setProfile(this.value)">Burnt</></div>
+            <div class="col-md-2"><input type="button" id="btnCurrentProfile" value="Current Profile" onclick="getCurrentProfile()" /></div>
+            </div>
+        <div class="row">
+            <div class="col-md-3">
+                <input type="button" id="btnStart" value="Toast!" onclick="setOnToast();" />
+            </div>
+            <div class="col-md-3">
+                <input type="button" id="btnStop" value="Stop" onclick="setOffToast();" />
+            </div>
+            <div class="col-md-3">
+                <input type="button" id="btnStatus" value="Status" onclick="currentStatus();" />
+            </div>
+            <div class="col-md-3">
+                <input type="button" id="btnToasterReset" value="Reset" onclick="reset()" />
+            </div>
         </div>
-		<h2>Pantry</h2>
-		<div>
-			<input type="button" id="btnGetStatus" value="Status" onclick="getPantryStatus();" />
-			<input type="button" id="btnHowMany" value="How Many Breads" onclick="howManyBreads();" />
-			<input type="button" id="btnPantryHasBread" value="Has Bread?" onclick="pantryHasBread();" /><br />
-			<input id="inputBreadsToBuy" type="number" min="0" max="100" placeholder="000" maxlength="3" />
-			<input type="button" id="btnBuyBread" value="Buy bread" onclick="buyBread();" />
-		</div>
-        <div>
-            
+	    <h2>Pantry</h2>
+        <div class="row">
+            <div class="col-md-1">
+                <input id="inputBreadsToBuy" type="number" min="0" max="100" placeholder="00" maxlength="3" />
+            </div>
+            <div class="col-md-3">
+                <input type="button" id="btnBuyBread" value="Buy bread" onclick="buyBread();" />
+            </div>
         </div>
+	    <div class="row">
+            <div class="col-md-3">
+                <input type="button" id="btnGetStatus" value="Status" onclick="getPantryStatus();" />
+            </div>
+            <div class="col-md-3">
+                <input type="button" id="btnHowMany" value="How Many Breads" onclick="howManyBreads();" />
+            </div>
+            <div class="col-md-3">
+                <input type="button" id="btnPantryHasBread" value="Has Bread?" onclick="pantryHasBread();" />
+            </div>
+        </div>        
+        <h2>Output Screen</h2>
+        <div class="row">
+            <div class="col-md-3">
+                <input type="button" id="btnClearOutput" value="Clear" onclick="clearOutput()" />
+            </div>
+        </div>
+        <div class="row">
+            <div id="divOutputResults" class="col-md-12" style='border:1px solid black; height: 180px; overflow-y: scroll; '></div>
+        </div> 
     </div>
 </div>
 
-
-<div class="row">
-<h2>Output Screen</h2>
-	<input type="button" id="btnClearOutput" value="Clean" onclick="clearOutput()" />
-	<div id="divOutputResults" style='border:1px solid black; height: 350px; overflow-y: scroll; '>
-	</div>
-</div>
-
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+<style>
+    div{
+        padding-bottom: 15px
+    }
 
+</style>
 <script>
- 
- function clearOutput(){
-	$('#divOutputResults').empty();
- };
 
-  var uriHead = 'http://localhost:@OptionsApplicationConfiguration.Value.ApplicationPort/api';
+    var iToastOn = false;
+    var uriHead = 'http://localhost:@OptionsApplicationConfiguration.Value.ApplicationPort/api';
   
 	var urls = {
 
@@ -107,7 +136,7 @@
 			"tipo": 'GET',
 			"url": uriHead + '/toaster/HowManyToastsMade'
 		},
-		'toasteroff':{
+		'reset':{
 			"tipo": 'PUT',
 			"url": uriHead + '/toaster/api/toasters/reset'
 		},
@@ -127,9 +156,18 @@
 		'pantryhasbread':{
 			"tipo": 'GET',
 			"url": uriHead + '/pantry/hasbread/'
-		}
+        },
+        'timeremaining': {
+            "tipo": 'GET',
+            "url": uriHead + '/toaster/timeRemaining/'
+
+        }
 
 	};
+
+    function clearOutput() {
+        $('#divOutputResults').empty();
+    };
 
 	/* ------Toaster--------*/
 
@@ -155,12 +193,12 @@
 		callAjax(urls["getcurrentstatus"]);
     };
 
-	function setOnToast(){
-		callAjax(urls["setontoast"]);
-
+    function setOnToast() {
+        iToastOn = true;
+        callAjax(urls["setontoast"]);
 	};
 
-	function setOffToast(){
+    function setOffToast() {
 		callAjax(urls["setofftoast"]);
 	};
 
@@ -172,16 +210,15 @@
 		callAjax(urls["howmanytoastsmade"]);
 	};
 	
-	function toasterOff(){
-		callAjax(urls["toasteroff"]);
+    function reset(){
+        callAjax(urls["reset"]);
 	};
 
 	function getCurrentProfile(){
 		callAjax(urls["getcurrentprofile"]);
 	};
-	
 
-
+    
 	/* ------Pantry--------*/
 
 	function howManyBreads(){
@@ -189,9 +226,20 @@
 	};
 
 	function getPantryStatus(){
-		callAjax(urls["getpantrystatus"]);
-	}
+        callAjax(urls["getpantrystatus"]);
 
+        $.ajax({
+            type: objCalled['tipo'],
+            url: (params && (params != null) && (params != 'undefined')) ? (objCalled['url'] + params) : objCalled['url'],
+            contentType: "application/json;charset=utf-8",
+            success: function (data, status, xhr) {
+                messages('(' + objCalled['url'] + '): ' + data);
+            },
+            error: function (xhr) {
+                errormessages('(' + objCalled['url'] + '): ' + xhr.responseText);
+            }
+        });
+	}
 
 	function buyBread(){
 		var iBreadsToBuy = parseInt($('#inputBreadsToBuy').val() * 1);
@@ -233,5 +281,36 @@
 		$('#divOutputResults').append('<p class="text-danger font-weight-bold">'+msj+'</p>');
 	}
 
+    $(document).ready(function () {
+        var timer = function getTimeRemaining() {
+            if (!iToastOn) return iToastOn;
+
+            var objCall = urls["timeremaining"];
+            $.ajax({
+                type: objCall['tipo'],
+                url: objCall['url'],
+                contentType: "application/json;charset=utf-8",
+                success: function (data, status, xhr) {
+                    var seconds = parseInt(data);
+                    if (seconds > 0) {
+                        $("#minutesRemaining").val(Math.trunc(data / 60) > 0 ? Math.trunc(data / 60) : 0);
+                        $("#secondsRemaining").val(Math.trunc(data % 60) >= 0 ? (data - (60 * Math.trunc(data / 60))) : data);
+                    }
+                    else {
+                        $("#minutesRemaining").val(0);
+                        $("#secondsRemaining").val(0);
+                        setOffToast();
+                        iToastOn = false;
+                    }
+
+                    return iToastOn;
+                },
+                error: function (xhr) {
+                    errormessages('(' + objCall['url'] + '): ' + xhr.responseText);
+                }
+            });
+        }
+        setInterval(timer, 1000);
+    });
 
 </script>

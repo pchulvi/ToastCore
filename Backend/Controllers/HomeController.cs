@@ -17,14 +17,14 @@ namespace Backend.Controllers
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
+            ViewData["Message"] = "The best toaster for the future testers: IToast";
 
             return View();
         }
 
         public IActionResult Contact()
         {
-            ViewData["Message"] = "Your contact page.";
+            ViewData["Message"] = "Support IToast with your cheerings (money will be welcome too)";
 
             return View();
         }
