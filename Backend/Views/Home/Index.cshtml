@@ -20,26 +20,17 @@
             <div class="col-md-2"><input type="button" id="btnSetTime" value="Set Time" onclick="setTime()" /></div>
         </div>
         <div class="row">
-            <div class="col-md-2"><label id="lblTimer">Time Remaining: </label></div>
-            <div class="col-md-2">
-                <input id="minutesRemaining" type="number" min="0" max="59" placeholder="00" style="width: 45px" disabled="disabled" />
-                <span>:</span>
-                <input id="secondsRemaining" type="number" min="0" max="59" placeholder="00" maxlength="2" style="width: 45px" disabled="disabled" />
-            </div>
-        </div>
-        <div class="row">
             <div class="col-md-2"><label id="lblToasts">Number of toasts: </label></div>
             <div class="col-md-2"><input type="number" id="toastsInput" min="0" placeholder="00" style="width: 45px" /></div>
             <div class="col-md-3"><input type="button" id="btnSetToasts" value="Set Toasts" onclick="setToasts()" /></div>
             <div class="col-md-3"><input type="button" id="btnHowManyToasts" value="Toasts Made" onclick="howManyToastsMade()" /></div>
-
-            </div>
+        </div>
         <div class="row">
-            <div class="col-md-2"><label id="lblProfile">Profile</label></div>
-            <div class="col-md-2"><input type="radio" name="profile" value="1" onclick="setProfile(this.value)">Low</></div>
-            <div class="col-md-2"><input type="radio" name="profile" value="2" onclick="setProfile(this.value)">Normal</></div>
-            <div class="col-md-2"><input type="radio" name="profile" value="3" onclick="setProfile(this.value)">High</></div>
-            <div class="col-md-2"><input type="radio" name="profile" value="4" onclick="setProfile(this.value)">Burnt</></div>
+            <div class="col-md-2"><label id="lblProfile">Profile: </label></div>
+            <div class="col-md-2"><input id="rdLow" type="radio" name="profile" value="1" onclick="setProfile(this.value)">Low</></div>
+            <div class="col-md-2"><input id="rdNormal" type="radio" name="profile" value="2" onclick="setProfile(this.value)">Normal</></div>
+            <div class="col-md-2"><input id="rdHigh" type="radio" name="profile" value="3" onclick="setProfile(this.value)">High</></div>
+            <div class="col-md-2"><input id="rdBurnt" type="radio" name="profile" value="4" onclick="setProfile(this.value)">Burnt</></div>
             <div class="col-md-2"><input type="button" id="btnCurrentProfile" value="Current Profile" onclick="getCurrentProfile()" /></div>
             </div>
         <div class="row">
@@ -56,7 +47,15 @@
                 <input type="button" id="btnToasterReset" value="Reset" onclick="reset()" />
             </div>
         </div>
-	    <h2>Pantry</h2>
+        <div class="row">
+            <div class="col-md-2"><label id="lblTimer">Time Remaining: </label></div>
+            <div class="col-md-2">
+                <input id="minutesRemaining" type="number" min="0" max="59" placeholder="00" style="width: 45px" disabled="disabled" />
+                <span>:</span>
+                <input id="secondsRemaining" type="number" min="0" max="59" placeholder="00" maxlength="2" style="width: 45px" disabled="disabled" />
+            </div>
+        </div>
+        <h2>Pantry</h2>
         <div class="row">
             <div class="col-md-1">
                 <input id="inputBreadsToBuy" type="number" min="0" max="100" placeholder="00" maxlength="3" />
@@ -181,6 +180,26 @@
         $('#divOutputResults').empty();
     };
 
+    function clearFields() {
+        $("#btnStart").css("color", "black");
+
+        $("#minutesInput").val('00');
+        $("#secondsInput").val('00');
+
+        $("#minutesRemaining").val('00');
+        $("#secondsRemaining").val('00');
+
+        $("#toastsInput").val('00');
+
+        $("input").each(function (index, element) {
+
+            if ($(element.type == "radio")) {
+                element.checked = false;
+            }
+
+        });
+    }
+
 	/* ------Toaster--------*/
 
 	function setTime(){
@@ -211,7 +230,8 @@
 	};
 
     function setOffToast() {
-		callAjax(urls["setofftoast"]);
+        callAjax(urls["setofftoast"]);
+        clearFields();
 	};
 
 	function setProfile(valor){
@@ -224,6 +244,7 @@
 	
     function reset(){
         callAjax(urls["reset"]);
+        clearFields();
 	};
 
 	function getCurrentProfile(){
@@ -294,6 +315,7 @@
                 success: function (data, status, xhr) {
                     var seconds = parseInt(data);
                     if (seconds > 0) {
+                        $("#btnStart").css("color", "green");
                         $("#minutesRemaining").val(Math.trunc(data / 60) > 0 ? Math.trunc(data / 60) : 0);
                         $("#secondsRemaining").val(Math.trunc(data % 60) >= 0 ? (data - (60 * Math.trunc(data / 60))) : data);
                     }
@@ -301,13 +323,14 @@
                         $("#minutesRemaining").val(0);
                         $("#secondsRemaining").val(0);
                         setOffToast();
+                        $("#btnStart").css("color", "black");
                         iToastOn = false;
                     }
 
                     return iToastOn;
                 },
                 error: function (xhr) {
-                    errormessages('(' + objCall['url'] + '): ' + xhr.responseText);
+                    if (xhr.status != 417) errormessages('(' + objCall['url'] + '): ' + xhr.responseText);
                 }
             });
         }
