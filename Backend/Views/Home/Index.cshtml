@@ -97,6 +97,18 @@
 
 </style>
 <script>
+    var curStatus = {
+        "0" : 'Off',
+        "1" : 'On'
+    }
+
+    var curProfile = {
+        "0": 'No profile',
+        "1": 'Low toast',
+        "2": 'Normal toast',
+        "3": 'High toast',
+        "4": 'Looking at the sun toast'
+    }
 
     var iToastOn = false;
     var uriHead = 'http://localhost:@OptionsApplicationConfiguration.Value.ApplicationPort/api';
@@ -189,8 +201,8 @@
 		callAjax(urls["settoasts"], toasts);
 	};
 
-	 function currentStatus() {
-		callAjax(urls["getcurrentstatus"]);
+    function currentStatus() {
+        callAjax(urls["getcurrentstatus"], null, curStatus);
     };
 
     function setOnToast() {
@@ -203,7 +215,7 @@
 	};
 
 	function setProfile(valor){
-		callAjax(urls["setprofile"],valor);
+        callAjax(urls["setprofile"], valor);
 	};
 
 	function howManyToastsMade(){
@@ -215,7 +227,7 @@
 	};
 
 	function getCurrentProfile(){
-		callAjax(urls["getcurrentprofile"]);
+        callAjax(urls["getcurrentprofile"], null, curProfile);
 	};
 
     
@@ -227,18 +239,6 @@
 
 	function getPantryStatus(){
         callAjax(urls["getpantrystatus"]);
-
-        $.ajax({
-            type: objCalled['tipo'],
-            url: (params && (params != null) && (params != 'undefined')) ? (objCalled['url'] + params) : objCalled['url'],
-            contentType: "application/json;charset=utf-8",
-            success: function (data, status, xhr) {
-                messages('(' + objCalled['url'] + '): ' + data);
-            },
-            error: function (xhr) {
-                errormessages('(' + objCalled['url'] + '): ' + xhr.responseText);
-            }
-        });
 	}
 
 	function buyBread(){
@@ -257,15 +257,16 @@
 
 	/* -------------------- */
 
-	function callAjax(objCalled,params){
+	function callAjax(objCalled,params,valueOf){
 		console.log('params:'+ params);
-		
+        var retValue;
 		  $.ajax({
             type: objCalled['tipo'],
             url: (params && (params != null) && (params != 'undefined') ) ? (objCalled['url'] + params) : objCalled['url'],
             contentType: "application/json;charset=utf-8",
             success: function (data, status, xhr) {
-				messages('('+objCalled['url']+'): '+data);
+                messages('(' + objCalled['url'] + '): ' + (valueOf != null ? valueOf[data] : data)); 
+                
             },
             error: function (xhr) {
 				errormessages('('+objCalled['url']+'): '+xhr.responseText);
