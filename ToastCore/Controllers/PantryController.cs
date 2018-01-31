@@ -123,16 +123,14 @@ namespace ToastCore.Controllers
         [EnableCors("MyPolicy")]
         public IActionResult GetStatus()
         {
-            //Pantry pantry = _context.Pantries.FirstOrDefault();
-
             int howManyBreads = _pantry.NumberOfBreads;
 
             PantryStatus pStatus = _pantry.Status;
 
-            if (howManyBreads == 0) pStatus=PantryStatus.Empty;
-            if (howManyBreads > 10 && howManyBreads <= 90) pStatus = PantryStatus.Normal;
             if (howManyBreads <= 10) pStatus= PantryStatus.AlmostEmpty;
+            if (howManyBreads > 10 && howManyBreads <= 90) pStatus = PantryStatus.Normal;
             if (howManyBreads > 90) pStatus= PantryStatus.Full;
+            if (howManyBreads == 0) pStatus = PantryStatus.Empty;
 
             _pantry.Status = pStatus;
 
