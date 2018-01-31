@@ -182,7 +182,7 @@ namespace ToastCore.Controllers
                 return StatusCode(500, "Error: " + ex.Message);
             }
 
-            return StatusCode(200, _toaster.Profile.ToString());
+            return StatusCode(200, _toaster.Profile);
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace ToastCore.Controllers
         [EnableCors("MyPolicy")]
         public IActionResult Toast(Status status)
         {
-            if (_toaster.Status == status) return StatusCode(200, String.Format("IToast status is: {0}", _toaster.Status));
+            if (_toaster.Status == status) return StatusCode(200, _toaster.Status);
 
             _toaster.Status = status;
 
@@ -295,7 +295,7 @@ namespace ToastCore.Controllers
             {
                 return StatusCode(500, "Error: " + ex.Message);
             }
-            return StatusCode(200, String.Format("IToast status is: {0}", _toaster.Status));
+            return StatusCode(200, _toaster.Status);
         }
 
         /// <summary>
