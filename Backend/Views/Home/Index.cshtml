@@ -17,13 +17,13 @@
                 <h3>IToast</h3>
                 <div class="col-md-12">
                     <div class="panel panel-default">
-                        <div class="panel-body ">
+                        <div id="divToasts" class="panel-body ">
                             <div class="col-md-4">
                                 <div class="panel panel-default">
                                     <div class="panel-heading"><label id="lblToasts">Toasts</label></div>
                                     <div class="panel-body">
                                         <input type="number" id="toastsInput" min="0" placeholder="00" style="width: 45px" />
-
+                                        <label id="lblToastsIn">Toasts in toaster</label>
                                     </div>
                                     <div class="panel-body">
                                         <button type="button" class="btn btn-primary" id="btnSetToasts" onclick="setToasts()">Set Toasts</button>
@@ -31,7 +31,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div id="divProfile" class="col-md-4">
                                 <div class="panel panel-default">
                                     <div class="panel-heading"><label id="lblProfile">Profile </label></div>
                                     <div class="panel-body">
@@ -45,7 +45,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div id="divTime" class="col-md-4">
                                 <div class="panel panel-default">
                                     <div class="panel-heading"><label id="lblTime">Time</label></div>
                                     <div class="panel-body">
@@ -250,6 +250,11 @@
     };
 
     function clearFields() {
+
+        $("#divToasts *").children().prop('disabled', false);
+        $("#divProfile *").children().prop('disabled', false);
+        $("#divTime *").children().prop('disabled', false);
+        
         $("#btnStart").css("color", "black");
 
         $("#minutesInput").val('00');
@@ -268,8 +273,7 @@
 
         });
 
-        //$("#spanToasting").hide();
-        //$("#iToasting").hide();
+        $("#lblToastsIn").empty();
         $("#divTimeRemaining").hide();
     }
 
@@ -290,7 +294,8 @@
 
 	function setToasts(){
 		var toasts = document.getElementById('toastsInput').value * 1;
-		callAjax(urls["settoasts"], toasts, null, "The IToast is loaded. Toasts");
+        callAjax(urls["settoasts"], toasts, null, "The IToast is loaded. Toasts");
+        $("#lblToastsIn").text("Toasts in toaster");
 	};
 
     function currentStatus() {
@@ -389,7 +394,11 @@
                     var seconds = parseInt(data);
                     if (seconds > 0) {
                         $("#divTimeRemaining").show();
-                        //$("#iToasting").show();
+
+                        $("#divToasts *").children().prop('disabled', true);
+                        $("#divProfile *").children().prop('disabled', true);
+                        $("#divTime *").children().prop('disabled', true);
+
                         if ($("#spanToasting").is(":visible")) $("#spanToasting").hide();
                         else $("#spanToasting").show();
                         
